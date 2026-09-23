@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة التجار المتطورة - سفيرة للخدمات اللوجستية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        safira: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <!-- Login Gate Overlay -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-2xl bg-safira-600 flex items-center justify-center shadow-md mx-auto mb-4 text-white text-3xl">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900">بوابة التجار</h2>
+                <p class="text-xs text-slate-500 mt-1">يرجى تسجيل الدخول باستخدام اسم المتجر ورقم الهاتف المسجل لدى الإدارة</p>
+            </div>
+            <form onsubmit="handleMerchantLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">اسم المتجر</label>
+                    <input type="text" id="login-username" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-safira-600 transition" placeholder="مثال: متجر القاهرة الإلكتروني">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">رقم الهاتف (كلمة المرور)</label>
+                    <input type="text" id="login-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-safira-600 transition" placeholder="01011223344">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-safira-600 hover:bg-safira-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-safira-600/30 transition">
+                    تسجيل الدخول
+                </button>
+            </form>
+            <div id="login-error" class="mt-4 text-center text-xs font-bold text-red-500 hidden"></div>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4 space-x-reverse">
+                <div class="w-12 h-12 rounded-2xl bg-safira-600 flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-store text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 id="merchant-store-name" class="text-lg font-black tracking-wide">متجر التجار</h1>
+                    <span class="text-xs text-safira-400 font-semibold flex items-center mt-0.5">
+                        <span class="w-2 h-2 rounded-full bg-safira-500 inline-block ml-1.5 animate-pulse"></span> متصل بـ النظام المركزي
+                    </span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="hidden sm:flex items-center bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700/60">
+                    <button onclick="switchTab('shipments')" id="tab-btn-shipments" class="px-5 py-2 text-xs font-bold bg-safira-600 text-white rounded-xl shadow-sm transition-all duration-200">الشحنات والطلبات</button>
+                    <button onclick="switchTab('warehouse')" id="tab-btn-warehouse" class="px-5 py-2 text-xs font-bold text-slate-300 hover:text-white rounded-xl transition-all duration-200">المخزن والمرتجعات</button>
+                    <button onclick="switchTab('finances')" id="tab-btn-finances" class="px-5 py-2 text-xs font-bold text-slate-300 hover:text-white rounded-xl transition-all duration-200">الحسابات والماليات</button>
+                </div>
+                <button onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center">
+                    <i class="fa-solid fa-right-from-bracket ml-1.5"></i> خروج
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-6 space-y-6">
+
+        <!-- 1. Shipments View -->
+        <div id="view-shipments" class="space-y-6">
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-8 rounded-3xl shadow-xl flex justify-between items-center relative overflow-hidden">
+                <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-safira-600/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10">
+                    <span class="bg-safira-600/30 text-safira-300 border border-safira-500/20 px-3.5 py-1.5 rounded-xl text-xs font-bold">إدارة عمليات الشحن</span>
+                    <h2 class="text-3xl font-black mt-3">تتبع شحناتك الحالية والمعلقة</h2>
+                    <p class="text-sm text-slate-400 mt-1 max-w-xl">جميع الطلبات الجديدة التي تقوم بإضافتها تُرسل فوراً للسيرفر السحابي.</p>
+                </div>
+                <button onclick="openModal()" class="relative z-10 bg-safira-600 hover:bg-safira-700 text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-safira-600/30 transition-all transform hover:-translate-y-0.5 flex items-center">
+                    <i class="fa-solid fa-plus ml-2 text-base"></i> إضافة أوردر جديد
+                </button>
+            </div>
+
+            <!-- Table Card -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800 text-base">سجل الطلبات والشحنات</h3>
+                    <button onclick="loadServerData()" class="text-xs font-bold text-safira-600 hover:underline"><i class="fa-solid fa-rotate ml-1"></i> تحديث البيانات</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead class="bg-slate-50/80 text-slate-400 text-xs uppercase tracking-wider font-bold border-b border-slate-100">
+                            <tr>
+                                <th class="p-4">رقم الشحنة</th>
+                                <th class="p-4">بيانات المستلم</th>
+                                <th class="p-4">العنوان</th>
+                                <th class="p-4">مبلغ التحصيل</th>
+                                <th class="p-4">الحالة الحالية</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipments-table-body" class="divide-y divide-slate-100 text-slate-700">
+                            <!-- Dynamically loaded from Server -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Warehouse View -->
+        <div id="view-warehouse" class="space-y-6 hidden">
+            <div class="bg-gradient-to-r from-indigo-950 to-slate-900 text-white p-8 rounded-3xl shadow-xl flex justify-between items-center">
+                <div>
+                    <span class="bg-indigo-500/30 text-indigo-300 border border-indigo-500/20 px-3.5 py-1.5 rounded-xl text-xs font-bold">المخزن الافتراضي</span>
+                    <h2 class="text-3xl font-black mt-3">إدارة واستلام المرتجعات</h2>
+                    <p class="text-sm text-slate-400 mt-1 max-w-xl">مراجعة الشحنات المرتجعة من قِبل المناديب وإدخالها رسمياً إلى مخزونك.</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center text-slate-500">
+                <i class="fa-solid fa-box-open text-4xl mb-3 text-slate-300"></i>
+                <p class="font-bold">لا توجد مرتجعات معلقة حالياً في المخزن.</p>
+            </div>
+        </div>
+
+        <!-- 3. Finances View -->
+        <div id="view-finances" class="space-y-6 hidden">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-xl"><i class="fa-solid fa-wallet text-safira-600 ml-2"></i> تقرير الحسابات والماليات</h3>
+                    <p class="text-xs text-slate-500 mt-1">إجمالي المستحقات المالية الخاصة بمتجرك.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
+                        <p class="text-xs font-bold text-slate-500">إجمالي المبالغ المحصلة</p>
+                        <h4 id="fin-total-collected" class="text-3xl font-black text-slate-900 mt-2">0 ج.م</h4>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
+                        <p class="text-xs font-bold text-slate-500">العمولات والمصاريف</p>
+                        <h4 id="fin-total-shipping" class="text-3xl font-black text-red-600 mt-2">0 ج.م</h4>
+                    </div>
+                    <div class="bg-safira-50 p-6 rounded-2xl border border-safira-200">
+                        <p class="text-xs font-bold text-safira-700">الصافي المستحق للتحويل</p>
+                        <h4 id="fin-net-dues" class="text-3xl font-black text-safira-700 mt-2">0 ج.م</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal: New Shipment -->
+    <div id="shipment-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                <div>
+                    <h3 class="font-black text-slate-900 text-lg">إضافة شحنة جديدة</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">ستدخل الشحنة في النظام لتظهر فوراً لدى الإدارة والمناديب.</p>
+                </div>
+                <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleCreateShipment(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">اسم المستلم</label>
+                        <input type="text" id="input-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">رقم الهاتف</label>
+                        <input type="text" id="input-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">العنوان / المدينة</label>
+                        <input type="text" id="input-address" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition" placeholder="القاهرة - مدينة نصر">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">مبلغ التحصيل (ج.م)</label>
+                        <input type="number" id="input-amount" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 space-x-reverse pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-sm transition">إلغاء</button>
+                    <button type="submit" class="px-6 py-2.5 bg-safira-600 hover:bg-safira-700 text-white rounded-xl font-bold text-sm shadow-md transition">حفظ وإرسال للسيرفر</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Configuration and API Script -->
+    <script src="config.js"></script>
+    <script>
+        let currentMerchant = JSON.parse(localStorage.getItem('safira_merchant')) || null;
+        let globalDbData = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (currentMerchant) {
+                document.getElementById('login-modal').classList.add('hidden');
+                document.getElementById('merchant-store-name').innerText = currentMerchant.name;
+                loadServerData();
+            }
+        });
+
+        async function handleMerchantLogin(e) {
+            e.preventDefault();
+            const storeName = document.getElementById('login-username').value.trim();
+            const phone = document.getElementById('login-password').value.trim();
+            const errEl = document.getElementById('login-error');
+
+            try {
+                const res = await apiRequest('/api/sync');
+                if (res && res.success && res.data && res.data.merchants) {
+                    const found = res.data.merchants.find(m => m.name.trim() === storeName && m.phone.trim() === phone);
+                    if (found) {
+                        currentMerchant = found;
+                        localStorage.setItem('safira_merchant', JSON.stringify(found));
+                        document.getElementById('login-modal').classList.add('hidden');
+                        document.getElementById('merchant-store-name').innerText = found.name;
+                        loadServerData();
+                    } else {
+                        errEl.innerText = 'اسم المتجر أو رقم الهاتف غير صحيح!';
+                        errEl.classList.remove('hidden');
+                    }
+                } else {
+                    errEl.innerText = 'تعذر الاتصال بقاعدة بيانات السيرفر.';
+                    errEl.classList.remove('hidden');
+                }
+            } catch (error) {
+                errEl.innerText = 'حدث خطأ أثناء الاتصال بالسيرفر.';
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('safira_merchant');
+            location.reload();
+        }
+
+        function switchTab(tabId) {
+            ['shipments', 'warehouse', 'finances'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${t}`).className = "px-5 py-2 text-xs font-bold text-slate-300 hover:text-white rounded-xl transition-all duration-200";
+            });
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabId}`).className = "px-5 py-2 text-xs font-bold bg-safira-600 text-white rounded-xl shadow-sm transition-all duration-200";
+        }
+
+        function openModal() { document.getElementById('shipment-modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('shipment-modal').classList.add('hidden'); }
+
+        async function loadServerData() {
+            try {
+                const res = await apiRequest('/api/sync');
+                if (res && res.success) {
+                    globalDbData = res.data;
+                    renderMerchantDashboard();
+                }
+            } catch (error) {
+                console.error('Error loading server data:', error);
+            }
+        }
+
+        function renderMerchantDashboard() {
+            if (!globalDbData || !currentMerchant) return;
+
+            // 1. Render Shipments
+            const tbody = document.getElementById('shipments-table-body');
+            tbody.innerHTML = '';
+
+            const myOrders = (globalDbData.orders || []).filter(o => o.merchantName === currentMerchant.name || o.merchantId === currentMerchant.id);
+
+            if (myOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">لا توجد شحنات مسجلة لمتجرك حتى الآن.</td></tr>`;
+            } else {
+                myOrders.forEach(o => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-50/50 transition";
+                    row.innerHTML = `
+                        <td class="p-4 font-black text-safira-700">${o.id || 'SAF-???'}</td>
+                        <td class="p-4"><span class="font-bold block text-slate-900">${o.custName}</span><span class="text-xs text-slate-400">${o.custPhone}</span></td>
+                        <td class="p-4 text-slate-600 font-semibold">${o.address}</td>
+                        <td class="p-4 font-bold text-slate-900">${o.amount} ج.م</td>
+                        <td class="p-4">
+                            <span class="bg-amber-50 text-amber-700 border border-amber-200/60 px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center">
+                                <i class="fa-solid fa-clock-rotate-left ml-1.5"></i> ${o.status || 'معلق'}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // 2. Render Finances
+            const totalCollected = myOrders.reduce((sum, o) => sum + (Number(o.amount) || 0), 0);
+            const totalShipping = myOrders.reduce((sum, o) => sum + (Number(o.shipping) || 70), 0);
+            const netDues = currentMerchant.dues !== undefined ? currentMerchant.dues : (totalCollected - totalShipping);
+
+            document.getElementById('fin-total-collected').innerText = totalCollected + ' ج.م';
+            document.getElementById('fin-total-shipping').innerText = totalShipping + ' ج.م';
+            document.getElementById('fin-net-dues').innerText = netDues + ' ج.م';
+        }
+
+        async function handleCreateShipment(e) {
+            e.preventDefault();
+            if (!globalDbData) return;
+
+            const newOrder = {
+                id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
+                waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
+                merchantId: currentMerchant.id || "MER-EX",
+                merchantName: currentMerchant.name,
+                custName: document.getElementById('input-name').value,
+                custPhone: document.getElementById('input-phone').value,
+                address: document.getElementById('input-address').value,
+                amount: Number(document.getElementById('input-amount').value),
+                shipping: 70,
+                delegateId: "",
+                status: "قيد المراجعة",
+                locked: false
+            };
+
+            if (!globalDbData.orders) globalDbData.orders = [];
+            globalDbData.orders.unshift(newOrder);
+
+            try {
+                const res = await apiRequest('/api/sync', {
+                    method: 'POST',
+                    body: JSON.stringify(globalDbData)
+                });
+                if (res && res.success) {
+                    closeModal();
+                    e.target.reset();
+                    renderMerchantDashboard();
+                    alert('تم إضافة الشحنة بنجاح وإرسالها للسيرفر المركزي!');
+                } else {
+                    alert('فشل حفظ الشحنة في السيرفر.');
+                }
+            } catch (error) {
+                alert('حدث خطأ في الاتصال بالسيرفر أثناء الحفظ.');
+            }
+        }
+    </script>
+</body>
+</html>
