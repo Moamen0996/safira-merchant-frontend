@@ -1,2 +1,2 @@
 # safira-merchant-frontend
-safira-admin-frontend  (صفحة التجار)
+safira-merchant-frontend (صفحة التجار)
