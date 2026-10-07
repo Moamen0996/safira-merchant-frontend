@@ -1,10 +1,13 @@
 // تحديد رابط السيرفر الأساسي على Railway
-const API_BASE_URL = 'https://safira-production.up.railway.app'; // استبدل هذا بالدومين الحقيقي الخاص بك
+const API_BASE_URL = 'https://safira-logistic-production.up.railway.app';
 
 // دالة مساعدة لتسهيل جلب البيانات أو إرسالها دون تكرار كتابة الرابط كاملاً
 async function apiRequest(endpoint, options = {}) {
     try {
-        const url = `${API_BASE_URL}${endpoint}`;
+        // دمج الرابط الأساسي مع المسار مع معالجة وجود أو غياب علامة الـ / تلقائياً
+        const cleanBase = API_BASE_URL.replace(/\/+$/, '');
+        const cleanEndpoint = endpoint.replace(/^\/+/, '');
+        const url = `${cleanBase}/${cleanEndpoint}`;
         
         // ضبط الهيدرز الافتراضية
         const defaultHeaders = {
