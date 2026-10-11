@@ -722,6 +722,39 @@ function handleExcelUpload(event) {
     reader.readAsArrayBuffer(file);
 }
 
+        let editingOrderIndex = null; // متغير لتتبع الأوردر جاري تعديله
+
+        // دالة فتح نافذة التعديل للأوردر غير المكتمل أو المعلق
+        function editOrder(index) {
+            if (!globalDbData || !globalDbData.orders) return;
+            
+            // تصفية أوردرات التاجر الحالي فقط للحصول على العنصر الصحيح في الجدول
+            const myOrders = globalDbData.orders.filter(o => o.merchantName === currentMerchant.name || o.merchantId === currentMerchant.id);
+            const targetOrder = myOrders[index];
+            if (!targetOrder) return;
+
+            // حفظ مؤشر الأوردر الأصلي في المصفوفة الكلية
+            editingOrderIndex = globalDbData.orders.findIndex(o => o.id === targetOrder.id);
+
+            // تعبئة حقول النموذج بالبيانات الحالية للأوردر
+            document.getElementById('input-name').value = targetOrder.custName !== 'بدون اسم' ? targetOrder.custName : '';
+            document.getElementById('input-phone').value = targetOrder.custPhone !== 'بدون هاتف' ? targetOrder.custPhone : '';
+            document.getElementById('input-zone').value = targetOrder.zone || 'القاهرة الكبرى';
+            document.getElementById('input-pay-type').value = targetOrder.payType || 'كاش';
+            document.getElementById('input-address').value = targetOrder.address !== 'بدون عنوان' ? targetOrder.address : '';
+            document.getElementById('input-amount').value = targetOrder.amount || '';
+            document.getElementById('input-notes').value = targetOrder.notes || '';
+
+            // تفعيل التفاعل مع طريقة الدفع لتحديث الحقول الظاهرة
+            handlePaymentTypeChange();
+            if (targetOrder.transactionId && targetOrder.transactionId !== 'غير متوفر') {
+                document.getElementById('input-trx-id').value = targetOrder.transactionId;
+            }
+
+            // إظهار نافذة التعديل / الإضافة
+            openModal();
+        }
+        
         async function requestMerchantPayout() {
             let mPayouts = JSON.parse(localStorage.getItem('safira_m_payouts')) || [];
             
