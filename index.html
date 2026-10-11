@@ -586,57 +586,80 @@ ${!isLocked ? `
                 if (amountInput.value == 0) amountInput.value = '';
             }
         }
-
-        // إضافة شحنة يدوياً مع فحص التكرار برقم الهاتف
-        async function handleCreateShipment(e) {
+async function handleCreateShipment(e) {
             e.preventDefault();
             if (!globalDbData) globalDbData = { orders: [] };
 
+            const name = document.getElementById('input-name').value.trim();
             const phone = document.getElementById('input-phone').value.trim();
+            const address = document.getElementById('input-address').value.trim();
             const zone = document.getElementById('input-zone').value;
             const payType = document.getElementById('input-pay-type').value;
             const trxId = document.getElementById('input-trx-id').value.trim();
             const amount = payType === 'مسبق الدفع' ? 0 : Number(document.getElementById('input-amount').value);
+            const notes = document.getElementById('input-notes').value.trim();
 
-            const isDuplicate = (globalDbData.orders || []).some(o => o.custPhone === phone);
+            const isComplete = name !== '' && phone !== '' && address !== '';
+            const isDuplicate = globalDbData.orders.some((o, idx) => idx !== editingOrderIndex && o.custPhone === phone);
 
             const rates = JSON.parse(localStorage.getItem('safira_shipping_rates')) || {
                 "القاهرة الكبرى": 60, "الإسكندرية والدلتا": 85, "الصعيد والمحافظات الحدودية": 120
             };
             const shippingCost = rates[zone] || 70;
 
-            const newOrder = {
-                id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
-                waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
-                merchantId: currentMerchant.id || "MER-EX",
-                merchantName: currentMerchant.name,
-                custName: document.getElementById('input-name').value.trim(),
-                custPhone: phone,
-                zone: zone,
-                address: document.getElementById('input-address').value.trim(),
-                payType: payType,
-                transactionId: trxId || 'غير متوفر',
-                amount: amount,
-                shipping: shippingCost,
-                notes: document.getElementById('input-notes').value.trim(),
-                isDuplicate: isDuplicate,
-                status: isDuplicate ? "معلق - ⚠️ أوردر مكرر" : "قيد المراجعة"
-            };
+            let status = "قيد المراجعة";
+            if (!isComplete) {
+                status = "❌ بيانات غير مكتملة";
+            } else if (isDuplicate) {
+                status = "معلق - ⚠️ أوردر مكرر";
+            }
 
-            if (!globalDbData.orders) globalDbData.orders = [];
-            globalDbData.orders.unshift(newOrder);
+            if (editingOrderIndex !== null && editingOrderIndex >= 0) {
+                // وضع التعديل على أوردر موجود مسبقاً
+                globalDbData.orders[editingOrderIndex].custName = name;
+                globalDbData.orders[editingOrderIndex].custPhone = phone;
+                globalDbData.orders[editingOrderIndex].address = address;
+                globalDbData.orders[editingOrderIndex].zone = zone;
+                globalDbData.orders[editingOrderIndex].payType = payType;
+                globalDbData.orders[editingOrderIndex].transactionId = trxId || 'غير متوفر';
+                globalDbData.orders[editingOrderIndex].amount = amount;
+                globalDbData.orders[editingOrderIndex].shipping = shippingCost;
+                globalDbData.orders[editingOrderIndex].notes = notes;
+                globalDbData.orders[editingOrderIndex].isComplete = isComplete;
+                globalDbData.orders[editingOrderIndex].isDuplicate = isDuplicate;
+                globalDbData.orders[editingOrderIndex].status = status;
+
+                editingOrderIndex = null; // إعادة تعيين مؤشر التعديل
+                alert('تم تحديث بيانات الشحنة بنجاح!');
+            } else {
+                // وضع إضافة أوردر جديد
+                const newOrder = {
+                    id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
+                    waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
+                    merchantId: currentMerchant.id || "MER-EX",
+                    merchantName: currentMerchant.name,
+                    custName: name,
+                    custPhone: phone,
+                    zone: zone,
+                    address: address,
+                    payType: payType,
+                    transactionId: trxId || 'غير متوفر',
+                    amount: amount,
+                    shipping: shippingCost,
+                    notes: notes,
+                    isDuplicate: isDuplicate,
+                    isComplete: isComplete,
+                    status: status
+                };
+                globalDbData.orders.unshift(newOrder);
+                alert('تم إضافة الشحنة بنجاح!');
+            }
+
             localStorage.setItem('safira_local_db', JSON.stringify(globalDbData));
-
             closeModal();
             e.target.reset();
             handlePaymentTypeChange();
             renderMerchantDashboard();
-            
-            if (isDuplicate) {
-                alert('تم تسجيل الشحنة بنجاح ولكنها مصنفة كـ (⚠️ أوردر مكرر) لتطابق رقم الهاتف!');
-            } else {
-                alert('تم إضافة الشحنة بنجاح وحساب تكلفة الشحن تلقائياً!');
-            }
         }
 // رفع شيت إكسيل وقراءة البيانات مع التحقق من الاكتمال والافتراض التلقائي للدفع
 function handleExcelUpload(event) {
