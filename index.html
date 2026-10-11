@@ -522,8 +522,9 @@ function renderMerchantDashboard() {
             const row = document.createElement('tr');
             row.className = "hover:bg-slate-50/50 transition";
             row.innerHTML = `
-                <td class="p-4 font-black text-safira-700">${o.id || 'SAF-???'}</td>
-                <td class="p-4">
+               <td class="p-4 font-black text-safira-700 cursor-pointer hover:underline" onclick="openTrackingModal('${o.id}')" title="انقر لتتبع الشحنة">
+    <i class="fa-solid fa-location-crosshairs ml-1 text-xs text-safira-500"></i> ${o.id || 'SAF-???'}
+</td>
                     <span class="font-bold block text-slate-900">${o.custName}</span>
                     <span class="text-xs text-slate-400 block">${o.custPhone}</span>
                     <span class="text-xs text-slate-500 block mt-0.5">${o.address || 'العنوان غير مسجل'}</span>
