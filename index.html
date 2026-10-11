@@ -536,15 +536,15 @@ function renderMerchantDashboard() {
                 <td class="p-4 font-bold text-slate-900">${o.amount} ج.م</td>
                 <td class="p-4 font-bold text-red-600">${o.shipping} ج.م</td>
                 <td class="p-4 flex items-center justify-between gap-2">
-                    <span class="px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center ${o.status && o.status.includes('مكرر') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200/60'}">
-                        ${o.status || 'قيد المراجعة'}
-                    </span>
-                    ${!isLocked ? `
-                        <button onclick="editOrder(${index})" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold px-2 py-1 bg-indigo-50 rounded-lg" title="تعديل الأوردر">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    ` : `<span class="text-[10px] text-slate-400 font-bold"><i class="fa-solid fa-lock"></i> مقفل</span>`}
-                </td>
+    <span class="px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center ${o.status && o.status.includes('غير مكتملة') ? 'bg-red-100 text-red-800 border border-red-300' : o.status && o.status.includes('مكرر') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200/60'}">
+    ${o.status || 'قيد المراجعة'}
+</span>
+${!isLocked ? `
+    <button onclick="editOrder(${index})" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold px-2 py-1 bg-indigo-50 rounded-lg mr-2" title="تعديل الأوردر">
+        <i class="fa-solid fa-pen"></i>
+    </button>
+` : `<span class="text-[10px] text-slate-400 font-bold"><i class="fa-solid fa-lock"></i> مقفل</span>`}
+</td>
             `;
             tbody.appendChild(row);
         });
