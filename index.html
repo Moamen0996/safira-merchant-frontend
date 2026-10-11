@@ -169,16 +169,22 @@
 
         <!-- 1. Shipments View -->
         <div id="view-shipments" class="space-y-6">
-            <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-8 rounded-3xl shadow-xl flex justify-between items-center relative overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center relative overflow-hidden gap-4">
                 <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-safira-600/10 rounded-full blur-2xl"></div>
                 <div class="relative z-10">
                     <span class="bg-safira-600/30 text-safira-300 border border-safira-500/20 px-3.5 py-1.5 rounded-xl text-xs font-bold">إدارة عمليات الشحن</span>
                     <h2 class="text-3xl font-black mt-3">تتبع شحناتك الحالية والمعلقة</h2>
-                    <p class="text-sm text-slate-400 mt-1 max-w-xl">جميع الطلبات الجديدة التي تقوم بإضافتها تُرسل فوراً للسيرفر السحابي.</p>
+                    <p class="text-sm text-slate-400 mt-1 max-w-xl">أضف شحناتك يدوياً أو ارفع شيت إكسيل لتسجيل الطلبات دفعة واحدة.</p>
                 </div>
-                <button onclick="openModal()" class="relative z-10 bg-safira-600 hover:bg-safira-700 text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-safira-600/30 transition-all transform hover:-translate-y-0.5 flex items-center">
-                    <i class="fa-solid fa-plus ml-2 text-base"></i> إضافة أوردر جديد
-                </button>
+                <div class="relative z-10 flex items-center space-x-3 space-x-reverse">
+                    <button onclick="openModal()" class="bg-safira-600 hover:bg-safira-700 text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-safira-600/30 transition flex items-center">
+                        <i class="fa-solid fa-plus ml-2"></i> إضافة أوردر جديد
+                    </button>
+                    <label class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-lg transition cursor-pointer flex items-center">
+                        <i class="fa-solid fa-file-excel ml-2"></i> رفع شيت إكسيل (Bulk)
+                        <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
+                    </label>
+                </div>
             </div>
 
             <!-- Table Card -->
@@ -192,9 +198,9 @@
                         <thead class="bg-slate-50/80 text-slate-400 text-xs uppercase tracking-wider font-bold border-b border-slate-100">
                             <tr>
                                 <th class="p-4">رقم الشحنة</th>
-                                <th class="p-4">بيانات المستلم</th>
+                                <th class="p-4">بيانات المستلم والعنوان</th>
                                 <th class="p-4">المحافظة / الوجهة</th>
-                                <th class="p-4">نوع الدفع</th>
+                                <th class="p-4">طريقة الدفع والتفاصيل</th>
                                 <th class="p-4">مبلغ التحصيل</th>
                                 <th class="p-4">مصاريف الشحن</th>
                                 <th class="p-4">الحالة الحالية</th>
@@ -267,55 +273,80 @@
 
     </main>
 
-    <!-- Modal: New Shipment -->
+    <!-- Modal: New Shipment (النموذج التفاعلي المحدث بالحقول الكاملة وطرق الدفع) -->
     <div id="shipment-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
                 <div>
                     <h3 class="font-black text-slate-900 text-lg">إضافة شحنة جديدة</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">ستدخل الشحنة في النظام لتظهر فوراً لدى الإدارة والمناديب.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">أدخل تفاصيل الشحنة وطريقة الدفع بدقة.</p>
                 </div>
                 <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
+            
             <form onsubmit="handleCreateShipment(event)" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">اسم المستلم</label>
-                        <input type="text" id="input-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم المستلم</label>
+                        <input type="text" id="input-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">رقم الهاتف</label>
-                        <input type="text" id="input-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف</label>
+                        <input type="tel" id="input-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600">
                     </div>
                 </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">محافظة وجهة التوصيل</label>
-                        <select id="input-zone" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">المحافظة</label>
+                        <select id="input-zone" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600">
                             <option value="القاهرة الكبرى">القاهرة الكبرى</option>
                             <option value="الإسكندرية والدلتا">الإسكندرية والدلتا</option>
                             <option value="الصعيد والمحافظات الحدودية">الصعيد والمحافظات الحدودية</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">نوع الدفع</label>
-                        <select id="input-pay-type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition">
-                            <option value="دفع عند الاستلام (COD)">دفع عند الاستلام (COD)</option>
-                            <option value="مسبق الدفع (Paid Online)">مسبق الدفع (Paid Online)</option>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">طريقة الدفع</label>
+                        <select id="input-pay-type" onchange="handlePaymentTypeChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 font-bold text-safira-700">
+                            <option value="كاش">كاش (COD)</option>
+                            <option value="انستا باي">انستا باي (InstaPay)</option>
+                            <option value="محفظة">محفظة إلكترونية</option>
+                            <option value="مسبق الدفع">مسبق الدفع (Paid Online)</option>
                         </select>
                     </div>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">مبلغ التحصيل (ج.م)</label>
-                    <input type="number" id="input-amount" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-safira-600 transition" placeholder="0 للأوردرات مسبقة الدفع أو المبلغ المطلوب تحصيله">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">العنوان التفصيلي</label>
+                    <input type="text" id="input-address" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600" placeholder="الشارع، البناية، الطابق، الشقة">
                 </div>
-                <div class="flex justify-end space-x-3 space-x-reverse pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-sm transition">إلغاء</button>
-                    <button type="submit" class="px-6 py-2.5 bg-safira-600 hover:bg-safira-700 text-white rounded-xl font-bold text-sm shadow-md transition">حفظ وإرسال للسيرفر</button>
+
+                <!-- حقل رقم التحويل (يظهر فقط في انستا باي أو المحفظة) -->
+                <div id="trx-id-container" class="hidden">
+                    <label class="block text-xs font-bold text-indigo-700 mb-1">رقم عملية التحويل (Transaction ID)</label>
+                    <input type="text" id="input-trx-id" class="w-full bg-indigo-50/50 border border-indigo-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-indigo-600" placeholder="أدخل رقم الإيصال أو مرجع التحويل">
+                </div>
+
+                <div>
+                    <label id="amount-label" class="block text-xs font-bold text-slate-700 mb-1">مبلغ التحصيل (ج.م)</label>
+                    <input type="number" id="input-amount" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600" placeholder="قيمة الشحنة المطلوبة">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الملاحظات</label>
+                    <textarea id="input-notes" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600" placeholder="أي تعليمات خاصة للمندوب..."></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2 space-x-reverse pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-safira-600 text-white rounded-xl font-bold text-xs shadow">حفظ الشحنة</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- SheetJS CDN لقراءة ملفات الإكسيل -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <!-- Script Section -->
     <script src="config.js"></script>
@@ -467,7 +498,7 @@
             } catch (error) {
                 globalDbData = globalDbData || {
                     orders: [
-                        { id: 'SAF-301', merchantName: currentMerchant ? currentMerchant.name : '', custName: 'محمود حسن', custPhone: '01011223344', zone: 'القاهرة الكبرى', payType: 'دفع عند الاستلام (COD)', amount: 1000, shipping: 60, status: 'تم التسليم' }
+                        { id: 'SAF-301', merchantName: currentMerchant ? currentMerchant.name : '', custName: 'محمود حسن', custPhone: '01011223344', zone: 'القاهرة الكبرى', address: '10 شارع التحرير', payType: 'كاش', amount: 1000, shipping: 60, status: 'تم التسليم' }
                     ]
                 };
                 renderMerchantDashboard();
@@ -490,14 +521,21 @@
                     row.className = "hover:bg-slate-50/50 transition";
                     row.innerHTML = `
                         <td class="p-4 font-black text-safira-700">${o.id || 'SAF-???'}</td>
-                        <td class="p-4"><span class="font-bold block text-slate-900">${o.custName}</span><span class="text-xs text-slate-400">${o.custPhone}</span></td>
+                        <td class="p-4">
+                            <span class="font-bold block text-slate-900">${o.custName}</span>
+                            <span class="text-xs text-slate-400 block">${o.custPhone}</span>
+                            <span class="text-xs text-slate-500 block mt-0.5">${o.address || 'العنوان غير مسجل'}</span>
+                        </td>
                         <td class="p-4 text-slate-600 font-semibold">${o.zone || 'القاهرة الكبرى'}</td>
-                        <td class="p-4"><span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-bold">${o.payType || 'COD'}</span></td>
+                        <td class="p-4">
+                            <span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg text-xs font-bold block w-fit">${o.payType || 'كاش'}</span>
+                            ${o.transactionId && o.transactionId !== 'غير متوفر' ? `<span class="text-[10px] text-slate-500 block mt-1">المرجع: ${o.transactionId}</span>` : ''}
+                        </td>
                         <td class="p-4 font-bold text-slate-900">${o.amount} ج.م</td>
                         <td class="p-4 font-bold text-red-600">${o.shipping} ج.م</td>
                         <td class="p-4">
-                            <span class="bg-amber-50 text-amber-700 border border-amber-200/60 px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center">
-                                <i class="fa-solid fa-clock-rotate-left ml-1.5"></i> ${o.status || 'معلق'}
+                            <span class="px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center ${o.status && o.status.includes('مكرر') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200/60'}">
+                                <i class="fa-solid fa-clock-rotate-left ml-1.5"></i> ${o.status || 'قيد المراجعة'}
                             </span>
                         </td>
                     `;
@@ -505,7 +543,7 @@
                 });
             }
 
-            const totalCollected = myOrders.reduce((sum, o) => sum + (o.payType === 'مسبق الدفع (Paid Online)' ? 0 : (Number(o.amount) || 0)), 0);
+            const totalCollected = myOrders.reduce((sum, o) => sum + (o.payType === 'مسبق الدفع' ? 0 : (Number(o.amount) || 0)), 0);
             const totalShipping = myOrders.reduce((sum, o) => sum + (Number(o.shipping) || 60), 0);
             const netDues = currentMerchant.dues !== undefined ? currentMerchant.dues : (totalCollected - totalShipping);
 
@@ -514,20 +552,50 @@
             document.getElementById('fin-net-dues').innerText = netDues + ' ج.م';
         }
 
+        // تفاعلية طريقة الدفع (إظهار رقم التحويل وتصفير المبلغ لمسبق الدفع)
+        function handlePaymentTypeChange() {
+            const payType = document.getElementById('input-pay-type').value;
+            const trxContainer = document.getElementById('trx-id-container');
+            const amountInput = document.getElementById('input-amount');
+            const amountLabel = document.getElementById('amount-label');
+
+            if (payType === 'انستا باي' || payType === 'محفظة') {
+                trxContainer.classList.remove('hidden');
+                document.getElementById('input-trx-id').required = true;
+            } else {
+                trxContainer.classList.add('hidden');
+                document.getElementById('input-trx-id').required = false;
+            }
+
+            if (payType === 'مسبق الدفع') {
+                amountInput.value = 0;
+                amountInput.readOnly = true;
+                amountInput.className = "w-full bg-slate-200 text-slate-500 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs outline-none cursor-not-allowed font-bold";
+                amountLabel.innerText = "مبلغ التحصيل (مسبق الدفع - 0 ج.م)";
+            } else {
+                amountInput.readOnly = false;
+                amountInput.className = "w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 font-bold";
+                amountLabel.innerText = "مبلغ التحصيل (ج.م)";
+                if (amountInput.value == 0) amountInput.value = '';
+            }
+        }
+
+        // إضافة شحنة يدوياً مع فحص التكرار برقم الهاتف
         async function handleCreateShipment(e) {
             e.preventDefault();
             if (!globalDbData) globalDbData = { orders: [] };
 
+            const phone = document.getElementById('input-phone').value.trim();
             const zone = document.getElementById('input-zone').value;
             const payType = document.getElementById('input-pay-type').value;
+            const trxId = document.getElementById('input-trx-id').value.trim();
+            const amount = payType === 'مسبق الدفع' ? 0 : Number(document.getElementById('input-amount').value);
 
-            // قراءة سعر الشحن تلقائياً من جدول الإدارة المركزي
+            const isDuplicate = (globalDbData.orders || []).some(o => o.custPhone === phone);
+
             const rates = JSON.parse(localStorage.getItem('safira_shipping_rates')) || {
-                "القاهرة الكبرى": 60,
-                "الإسكندرية والدلتا": 85,
-                "الصعيد والمحافظات الحدودية": 120
+                "القاهرة الكبرى": 60, "الإسكندرية والدلتا": 85, "الصعيد والمحافظات الحدودية": 120
             };
-
             const shippingCost = rates[zone] || 70;
 
             const newOrder = {
@@ -535,35 +603,95 @@
                 waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
                 merchantId: currentMerchant.id || "MER-EX",
                 merchantName: currentMerchant.name,
-                custName: document.getElementById('input-name').value,
-                custPhone: document.getElementById('input-phone').value,
+                custName: document.getElementById('input-name').value.trim(),
+                custPhone: phone,
                 zone: zone,
+                address: document.getElementById('input-address').value.trim(),
                 payType: payType,
-                amount: Number(document.getElementById('input-amount').value),
+                transactionId: trxId || 'غير متوفر',
+                amount: amount,
                 shipping: shippingCost,
-                delegateId: "",
-                status: "قيد المراجعة",
-                locked: false
+                notes: document.getElementById('input-notes').value.trim(),
+                isDuplicate: isDuplicate,
+                status: isDuplicate ? "معلق - ⚠️ أوردر مكرر" : "قيد المراجعة"
             };
 
             if (!globalDbData.orders) globalDbData.orders = [];
             globalDbData.orders.unshift(newOrder);
+            localStorage.setItem('safira_local_db', JSON.stringify(globalDbData));
 
-            try {
-                const res = await apiRequest('/api/sync', {
-                    method: 'POST',
-                    body: JSON.stringify(globalDbData)
-                });
-                closeModal();
-                e.target.reset();
-                renderMerchantDashboard();
+            closeModal();
+            e.target.reset();
+            handlePaymentTypeChange();
+            renderMerchantDashboard();
+            
+            if (isDuplicate) {
+                alert('تم تسجيل الشحنة بنجاح ولكنها مصنفة كـ (⚠️ أوردر مكرر) لتطابق رقم الهاتف!');
+            } else {
                 alert('تم إضافة الشحنة بنجاح وحساب تكلفة الشحن تلقائياً!');
-            } catch (error) {
-                closeModal();
-                e.target.reset();
-                renderMerchantDashboard();
-                alert('تم إضافة الشحنة محلياً بنجاح وحساب الشحن تلقائياً!');
             }
+        }
+
+        // رفع شيت إكسيل وقراءة البيانات مع رصد التكرار
+        function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                const rows = XLSX.utils.sheet_to_json(worksheet);
+                if (!globalDbData) globalDbData = { orders: [] };
+
+                let addedCount = 0;
+                let duplicateCount = 0;
+
+                rows.forEach(row => {
+                    const phone = String(row['الهاتف'] || row['phone'] || '').trim();
+                    const zone = row['المحافظة'] || row['zone'] || 'القاهرة الكبرى';
+                    const payType = row['طريقة الدفع'] || row['payType'] || 'كاش';
+                    const amount = payType === 'مسبق الدفع' ? 0 : Number(row['المبلغ'] || row['amount'] || 0);
+                    
+                    if (!phone) return;
+
+                    const isDuplicate = (globalDbData.orders || []).some(o => o.custPhone === phone);
+                    if (isDuplicate) duplicateCount++;
+
+                    const rates = JSON.parse(localStorage.getItem('safira_shipping_rates')) || { "القاهرة الكبرى": 60, "الإسكندرية والدلتا": 85, "الصعيد والمحافظات الحدودية": 120 };
+                    const shippingCost = rates[zone] || 70;
+
+                    const newOrder = {
+                        id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
+                        waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
+                        merchantId: currentMerchant.id || "MER-EX",
+                        merchantName: currentMerchant.name,
+                        custName: row['الاسم'] || row['name'] || 'عميل إكسيل',
+                        custPhone: phone,
+                        zone: zone,
+                        address: row['العنوان'] || row['address'] || 'غير محدد',
+                        payType: payType,
+                        transactionId: row['رقم التحويل'] || 'غير متوفر',
+                        amount: amount,
+                        shipping: shippingCost,
+                        notes: row['الملاحظات'] || '',
+                        isDuplicate: isDuplicate,
+                        status: isDuplicate ? "معلق - ⚠️ أوردر مكرر" : "قيد المراجعة"
+                    };
+
+                    globalDbData.orders.unshift(newOrder);
+                    addedCount++;
+                });
+
+                localStorage.setItem('safira_local_db', JSON.stringify(globalDbData));
+                renderMerchantDashboard();
+                alert(`تم رفع الملف بنجاح! تم إضافة (${addedCount}) شحنة، منها (${duplicateCount}) شحنة تم رصدها كـ ⚠️ أوردر مكرر.`);
+                event.target.value = '';
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         async function requestMerchantPayout() {
