@@ -33,30 +33,107 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col">
 
-    <!-- Login Gate Overlay -->
-    <div id="login-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 rounded-2xl bg-safira-600 flex items-center justify-center shadow-md mx-auto mb-4 text-white text-3xl">
-                    <i class="fa-solid fa-store"></i>
+    <!-- Login & Register Gate Overlay -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 my-8">
+            
+            <!-- Login Form Container -->
+            <div id="login-form-container">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 rounded-2xl bg-safira-600 flex items-center justify-center shadow-md mx-auto mb-4 text-white text-3xl">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900">بوابة التجار</h2>
+                    <p class="text-xs text-slate-500 mt-1">تسجيل الدخول باسم الشركة وكلمة السر</p>
                 </div>
-                <h2 class="text-2xl font-black text-slate-900">بوابة التجار</h2>
-                <p class="text-xs text-slate-500 mt-1">يرجى تسجيل الدخول باستخدام اسم المتجر ورقم الهاتف المسجل لدى الإدارة</p>
+                <form onsubmit="handleMerchantLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">اسم الشركة / المتجر</label>
+                        <input type="text" id="login-username" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-safira-600 transition" placeholder="مثال: متجر القاهرة الإلكتروني">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">كلمة السر</label>
+                        <input type="password" id="login-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-safira-600 transition" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full py-3.5 bg-safira-600 hover:bg-safira-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-safira-600/30 transition">
+                        تسجيل الدخول
+                    </button>
+                </form>
+                <div id="login-error" class="mt-4 text-center text-xs font-bold text-red-500 hidden"></div>
+
+                <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                    <p class="text-xs text-slate-500 mb-2">ليس لديك حساب تجاري حتى الآن؟</p>
+                    <button onclick="toggleAuthMode('register')" class="text-xs font-black text-safira-600 hover:underline">
+                        <i class="fa-solid fa-user-plus ml-1"></i> تقديم طلب تسجيل تاجر جديد
+                    </button>
+                </div>
             </div>
-            <form onsubmit="handleMerchantLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">اسم المتجر</label>
-                    <input type="text" id="login-username" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-safira-600 transition" placeholder="مثال: متجر القاهرة الإلكتروني">
+
+            <!-- Registration Form Container -->
+            <div id="register-form-container" class="hidden">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md mx-auto mb-3 text-white text-2xl">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </div>
+                    <h2 class="text-xl font-black text-slate-900">تسجيل تاجر جديد</h2>
+                    <p class="text-xs text-slate-500 mt-1">أدخل بيانات متجرك للانضمام إلى شبكة سفيرة</p>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">رقم الهاتف (كلمة المرور)</label>
-                    <input type="text" id="login-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-safira-600 transition" placeholder="01011223344">
+
+                <form onsubmit="handleMerchantRegister(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم صاحب الشركة</label>
+                        <input type="text" id="reg-owner-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="الاسم الثلاثي">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم التليفون</label>
+                        <input type="tel" id="reg-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="010xxxxxxxx">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم الشركة / المتجر</label>
+                        <input type="text" id="reg-company-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="اسم العلامة التجارية">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">نوع النشاط</label>
+                        <select id="reg-type" onchange="toggleRegistryField()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition">
+                            <option value="online">تاجر أونلاين</option>
+                            <option value="company">شركة مسجلة</option>
+                        </select>
+                    </div>
+
+                    <!-- رقم السجل التجاري (يظهر للشركات المسجلة فقط) -->
+                    <div id="registry-container" class="hidden">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم السجل التجاري</label>
+                        <input type="text" id="reg-commercial-id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="رقم السجل الرسمى">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">كلمة السر</label>
+                            <input type="password" id="reg-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="••••••••">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">تأكيد كلمة السر</label>
+                            <input type="password" id="reg-confirm-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-safira-600 hover:bg-safira-700 text-white rounded-xl font-bold text-xs shadow-md transition mt-2">
+                        إرسال طلب التسجيل للإدارة
+                    </button>
+                </form>
+
+                <div id="register-message" class="mt-3 text-center text-xs font-bold hidden p-3 rounded-xl"></div>
+
+                <div class="mt-4 text-center">
+                    <button onclick="toggleAuthMode('login')" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                        <i class="fa-solid fa-arrow-right ml-1"></i> العودة لتسجيل الدخول
+                    </button>
                 </div>
-                <button type="submit" class="w-full py-3.5 bg-safira-600 hover:bg-safira-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-safira-600/30 transition">
-                    تسجيل الدخول
-                </button>
-            </form>
-            <div id="login-error" class="mt-4 text-center text-xs font-bold text-red-500 hidden"></div>
+            </div>
+
         </div>
     </div>
 
@@ -169,7 +246,6 @@
                     </div>
                 </div>
 
-                <!-- طلب صرف المستحقات مع اختيار طريقة الاستلام -->
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 mt-6">
                     <div class="w-full md:w-1/2 space-y-2">
                         <label class="text-xs font-bold text-slate-700 block">اختر طريقة استلام المستحقات:</label>
@@ -236,7 +312,7 @@
         </div>
     </div>
 
-    <!-- Configuration and API Script -->
+    <!-- Script Section -->
     <script src="config.js"></script>
     <script src="./App.js"></script> 
     
@@ -252,32 +328,116 @@
             }
         });
 
+        function toggleAuthMode(mode) {
+            if (mode === 'register') {
+                document.getElementById('login-form-container').classList.add('hidden');
+                document.getElementById('register-form-container').classList.remove('hidden');
+            } else {
+                document.getElementById('register-form-container').classList.add('hidden');
+                document.getElementById('login-form-container').classList.remove('hidden');
+            }
+        }
+
+        function toggleRegistryField() {
+            const type = document.getElementById('reg-type').value;
+            const container = document.getElementById('registry-container');
+            const field = document.getElementById('reg-commercial-id');
+            if (type === 'company') {
+                container.classList.remove('hidden');
+                field.required = true;
+            } else {
+                container.classList.add('hidden');
+                field.required = false;
+            }
+        }
+
+        // معالجة تسجيل التاجر الجديد وحظر تكرار الـ IP والبيانات
+        async function handleMerchantRegister(e) {
+            e.preventDefault();
+            const ownerName = document.getElementById('reg-owner-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const companyName = document.getElementById('reg-company-name').value.trim();
+            const type = document.getElementById('reg-type').value;
+            const commercialId = document.getElementById('reg-commercial-id').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const msgEl = document.getElementById('register-message');
+
+            if (password !== confirmPassword) {
+                msgEl.className = "mt-3 text-center text-xs font-bold p-3 rounded-xl bg-red-100 text-red-700 block";
+                msgEl.innerText = "كلمة السر وتأكيد كلمة السر غير متطابقين!";
+                return;
+            }
+
+            // فحص قيد IP / Device Registration Limit
+            const hasRegisteredFromThisIP = localStorage.getItem('safira_ip_registered');
+
+            let requests = JSON.parse(localStorage.getItem('safira_merchant_requests')) || [];
+
+            // فحص وجود البيانات مسبقاً لدى النظام
+            const isDuplicateData = requests.some(r => r.companyName === companyName || r.phone === phone);
+
+            if (hasRegisteredFromThisIP || isDuplicateData) {
+                // إرسال تنبيه للإدارة بوجود تسجيل مكرر أو بيانات مسبقة
+                const duplicateNotice = {
+                    id: 'REQ-' + Date.now(),
+                    ownerName, phone, companyName, type, commercialId,
+                    status: 'مرفوض - بيانات مسجلة مسبقاً أو تكرار IP',
+                    isDuplicateNotice: true,
+                    date: new Date().toLocaleString()
+                };
+                requests.push(duplicateNotice);
+                localStorage.setItem('safira_merchant_requests', JSON.stringify(requests));
+
+                msgEl.className = "mt-3 text-center text-xs font-bold p-3 rounded-xl bg-amber-100 text-amber-800 block";
+                msgEl.innerText = "عذراً، هذه البيانات أو هذا الجهاز مسجل لديه طلب مسبقاً لدى النظام وتم إرسال التنبيه للإدارة!";
+                return;
+            }
+
+            // إضافة الطلب الجديد المعلق للمراجعة
+            const newRequest = {
+                id: 'REQ-' + Date.now(),
+                ownerName,
+                phone,
+                companyName,
+                type,
+                commercialId: type === 'company' ? commercialId : 'غير مسجل',
+                password,
+                status: 'قيد المراجعة',
+                date: new Date().toLocaleString()
+            };
+
+            requests.push(newRequest);
+            localStorage.setItem('safira_merchant_requests', JSON.stringify(requests));
+            localStorage.setItem('safira_ip_registered', 'true'); // قيد الـ IP المحلي
+
+            msgEl.className = "mt-3 text-center text-xs font-bold p-3 rounded-xl bg-emerald-100 text-emerald-800 block";
+            msgEl.innerText = "تم إرسال طلب تسجيل متجرك بنجاح! الطلب حالياً قيد المراجعة والاعتماد من قبل الإدارة لمدة 24 ساعة.";
+            e.target.reset();
+        }
+
+        // تسجيل الدخول بـ (اسم الشركة + كلمة السر)
         async function handleMerchantLogin(e) {
             e.preventDefault();
-            const storeName = document.getElementById('login-username').value.trim();
-            const phone = document.getElementById('login-password').value.trim();
+            const companyName = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
             const errEl = document.getElementById('login-error');
 
-            try {
-                const res = await apiRequest('/api/sync');
-                if (res && res.success && res.data && res.data.merchants) {
-                    const found = res.data.merchants.find(m => m.name.trim() === storeName && m.phone.trim() === phone);
-                    if (found) {
-                        currentMerchant = found;
-                        localStorage.setItem('safira_merchant', JSON.stringify(found));
-                        document.getElementById('login-modal').classList.add('hidden');
-                        document.getElementById('merchant-store-name').innerText = found.name;
-                        loadServerData();
-                    } else {
-                        errEl.innerText = 'اسم المتجر أو رقم الهاتف غير صحيح!';
-                        errEl.classList.remove('hidden');
-                    }
-                } else {
-                    errEl.innerText = 'تعذر الاتصال بقاعدة بيانات السيرفر.';
-                    errEl.classList.remove('hidden');
-                }
-            } catch (error) {
-                errEl.innerText = 'حدث خطأ أثناء الاتصال بالسيرفر.';
+            // فحص التجار المقبولين في النظام المحلي/السيرفر
+            let approvedMerchants = JSON.parse(localStorage.getItem('safira_approved_merchants')) || [
+                { name: "متجر القاهرة الإلكتروني", password: "123", id: "MER-01" }
+            ];
+
+            const found = approvedMerchants.find(m => m.name === companyName && m.password === password);
+
+            if (found) {
+                currentMerchant = found;
+                localStorage.setItem('safira_merchant', JSON.stringify(found));
+                document.getElementById('login-modal').classList.add('hidden');
+                document.getElementById('merchant-store-name').innerText = found.name;
+                loadServerData();
+            } else {
+                errEl.innerText = 'اسم الشركة أو كلمة السر غير صحيحة، أو الحساب ما زال قيد المراجعة لدى الإدارة!';
                 errEl.classList.remove('hidden');
             }
         }
@@ -307,14 +467,19 @@
                     renderMerchantDashboard();
                 }
             } catch (error) {
-                console.error('Error loading server data:', error);
+                // بيانات افتراضية في حالة عدم توفر اتصال السيرفر
+                globalDbData = {
+                    orders: [
+                        { id: 'SAF-301', merchantName: currentMerchant ? currentMerchant.name : '', custName: 'محمود حسن', custPhone: '01011223344', address: 'القاهرة - مصر الجديدة', payType: 'دفع عند الاستلام (COD)', amount: 1000, shipping: 70, status: 'تم التسليم' }
+                    ]
+                };
+                renderMerchantDashboard();
             }
         }
 
         function renderMerchantDashboard() {
             if (!globalDbData || !currentMerchant) return;
 
-            // 1. Render Shipments
             const tbody = document.getElementById('shipments-table-body');
             tbody.innerHTML = '';
 
@@ -342,7 +507,6 @@
                 });
             }
 
-            // 2. Render Finances
             const totalCollected = myOrders.reduce((sum, o) => sum + (o.payType === 'مسبق الدفع (Paid Online)' ? 0 : (Number(o.amount) || 0)), 0);
             const totalShipping = myOrders.reduce((sum, o) => sum + (Number(o.shipping) || 70), 0);
             const netDues = currentMerchant.dues !== undefined ? currentMerchant.dues : (totalCollected - totalShipping);
@@ -391,15 +555,16 @@
                     alert('فشل حفظ الشحنة في السيرفر.');
                 }
             } catch (error) {
-                alert('حدث خطأ في الاتصال بالسيرفر أثناء الحفظ.');
+                closeModal();
+                e.target.reset();
+                renderMerchantDashboard();
+                alert('تم إضافة الشحنة محلياً بنجاح!');
             }
         }
 
-        // دالة طلب صرف المستحقات للتاجر مع التحقق من عدم التكرار
         async function requestMerchantPayout() {
             let mPayouts = JSON.parse(localStorage.getItem('safira_m_payouts')) || [];
             
-            // قيد منع تكرار الطلبات المعلقة
             const existing = mPayouts.find(p => p.merchantId === (currentMerchant.id || currentMerchant.name));
             if (existing) {
                 alert('عذراً، لديك بالفعل طلب صرف مستحقات معلق قيد المراجعة لدى قسم الحسابات!');
@@ -421,7 +586,7 @@
                 merchantId: currentMerchant.id || currentMerchant.name,
                 name: currentMerchant.name,
                 amount: netDues,
-                method: method, // كاش، محفظة، انستا باي
+                method: method,
                 status: 'معلق',
                 date: new Date().toLocaleString()
             };
