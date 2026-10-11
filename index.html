@@ -638,68 +638,89 @@ function renderMerchantDashboard() {
                 alert('تم إضافة الشحنة بنجاح وحساب تكلفة الشحن تلقائياً!');
             }
         }
+// رفع شيت إكسيل وقراءة البيانات مع التحقق من الاكتمال والافتراض التلقائي للدفع
+function handleExcelUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-        // رفع شيت إكسيل وقراءة البيانات مع رصد التكرار
-        function handleExcelUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        const rows = XLSX.utils.sheet_to_json(worksheet);
+        if (!globalDbData) globalDbData = { orders: [] };
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                
-                const rows = XLSX.utils.sheet_to_json(worksheet);
-                if (!globalDbData) globalDbData = { orders: [] };
+        let addedCount = 0;
+        let duplicateCount = 0;
+        let incompleteCount = 0;
 
-                let addedCount = 0;
-                let duplicateCount = 0;
+        rows.forEach(row => {
+            const name = String(row['الاسم'] || row['name'] || '').trim();
+            const phone = String(row['الهاتف'] || row['phone'] || '').trim();
+            const address = String(row['العنوان'] || row['address'] || '').trim();
+            const zone = row['المحافظة'] || row['zone'] || 'القاهرة الكبرى';
+            const rawAmount = row['المبلغ'] || row['amount'];
+            
+            // فحص اكتمال البيانات الأساسية (الاسم، الهاتف، العنوان)
+            const isComplete = name !== '' && phone !== '' && address !== '';
+            
+            // في حالة وجود مبلغ أمام الأوردر، يتم افتراض أن طريقة الدفع "كاش" تلقائياً
+            let payType = row['طريقة الدفع'] || row['payType'];
+            if (!payType) {
+                payType = (rawAmount !== undefined && rawAmount !== null && Number(rawAmount) > 0) ? 'كاش' : 'مسبق الدفع';
+            }
 
-                rows.forEach(row => {
-                    const phone = String(row['الهاتف'] || row['phone'] || '').trim();
-                    const zone = row['المحافظة'] || row['zone'] || 'القاهرة الكبرى';
-                    const payType = row['طريقة الدفع'] || row['payType'] || 'كاش';
-                    const amount = payType === 'مسبق الدفع' ? 0 : Number(row['المبلغ'] || row['amount'] || 0);
-                    
-                    if (!phone) return;
+            const amount = payType === 'مسبق الدفع' ? 0 : Number(rawAmount || 0);
+            const isDuplicate = (globalDbData.orders || []).some(o => o.custPhone === phone);
 
-                    const isDuplicate = (globalDbData.orders || []).some(o => o.custPhone === phone);
-                    if (isDuplicate) duplicateCount++;
+            if (isDuplicate) duplicateCount++;
+            if (!isComplete) incompleteCount++;
 
-                    const rates = JSON.parse(localStorage.getItem('safira_shipping_rates')) || { "القاهرة الكبرى": 60, "الإسكندرية والدلتا": 85, "الصعيد والمحافظات الحدودية": 120 };
-                    const shippingCost = rates[zone] || 70;
+            const rates = JSON.parse(localStorage.getItem('safira_shipping_rates')) || { "القاهرة الكبرى": 60, "الإسكندرية والدلتا": 85, "الصعيد والمحافظات الحدودية": 120 };
+            const shippingCost = rates[zone] || 70;
 
-                    const newOrder = {
-                        id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
-                        waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
-                        merchantId: currentMerchant.id || "MER-EX",
-                        merchantName: currentMerchant.name,
-                        custName: row['الاسم'] || row['name'] || 'عميل إكسيل',
-                        custPhone: phone,
-                        zone: zone,
-                        address: row['العنوان'] || row['address'] || 'غير محدد',
-                        payType: payType,
-                        transactionId: row['رقم التحويل'] || 'غير متوفر',
-                        amount: amount,
-                        shipping: shippingCost,
-                        notes: row['الملاحظات'] || '',
-                        isDuplicate: isDuplicate,
-                        status: isDuplicate ? "معلق - ⚠️ أوردر مكرر" : "قيد المراجعة"
-                    };
+            // تحديد الحالة بناءً على التكرار واكتمال البيانات
+            let status = "قيد المراجعة";
+            if (!isComplete) {
+                status = "❌ بيانات غير مكتملة";
+            } else if (isDuplicate) {
+                status = "معلق - ⚠️ أوردر مكرر";
+            }
 
-                    globalDbData.orders.unshift(newOrder);
-                    addedCount++;
-                });
-
-                localStorage.setItem('safira_local_db', JSON.stringify(globalDbData));
-                renderMerchantDashboard();
-                alert(`تم رفع الملف بنجاح! تم إضافة (${addedCount}) شحنة، منها (${duplicateCount}) شحنة تم رصدها كـ ⚠️ أوردر مكرر.`);
-                event.target.value = '';
+            const newOrder = {
+                id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
+                waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
+                merchantId: currentMerchant.id || "MER-EX",
+                merchantName: currentMerchant.name,
+                custName: name || 'بدون اسم',
+                custPhone: phone || 'بدون هاتف',
+                zone: zone,
+                address: address || 'بدون عنوان',
+                payType: payType,
+                transactionId: row['رقم التحويل'] || 'غير متوفر',
+                amount: amount,
+                shipping: shippingCost,
+                notes: row['الملاحظات'] || '',
+                isDuplicate: isDuplicate,
+                isComplete: isComplete,
+                status: status
             };
-            reader.readAsArrayBuffer(file);
-        }
+
+            globalDbData.orders.unshift(newOrder);
+            addedCount++;
+        });
+
+        localStorage.setItem('safira_local_db', JSON.stringify(globalDbData));
+        renderMerchantDashboard();
+        
+        alert(`تم رفع الملف بنجاح!\n- إجمالي الشحنات المضافة: ${addedCount}\n- مكررة: ${duplicateCount}\n- ❌ غير مكتملة البيانات: ${incompleteCount}`);
+        event.target.value = '';
+    };
+    reader.readAsArrayBuffer(file);
+}
 
         async function requestMerchantPayout() {
             let mPayouts = JSON.parse(localStorage.getItem('safira_m_payouts')) || [];
