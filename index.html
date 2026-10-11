@@ -504,53 +504,60 @@
                 renderMerchantDashboard();
             }
         }
+function renderMerchantDashboard() {
+    if (!globalDbData || !currentMerchant) return;
 
-        function renderMerchantDashboard() {
-            if (!globalDbData || !currentMerchant) return;
+    const tbody = document.getElementById('shipments-table-body');
+    tbody.innerHTML = '';
 
-            const tbody = document.getElementById('shipments-table-body');
-            tbody.innerHTML = '';
+    const myOrders = (globalDbData.orders || []).filter(o => o.merchantName === currentMerchant.name || o.merchantId === currentMerchant.id);
 
-            const myOrders = (globalDbData.orders || []).filter(o => o.merchantName === currentMerchant.name || o.merchantId === currentMerchant.id);
+    if (myOrders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">لا توجد شحنات مسجلة لمتجرك حتى الآن.</td></tr>`;
+    } else {
+        myOrders.forEach((o, index) => {
+            // التحقق مما إذا تم قبول الطلب من الإدارة لمنع التعديل
+            const isLocked = o.status && (o.status.includes('تم التسليم') || o.status.includes('جاري التوصيل') || o.status.includes('معتمد') || o.locked === true);
 
-            if (myOrders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">لا توجد شحنات مسجلة لمتجرك حتى الآن.</td></tr>`;
-            } else {
-                myOrders.forEach(o => {
-                    const row = document.createElement('tr');
-                    row.className = "hover:bg-slate-50/50 transition";
-                    row.innerHTML = `
-                        <td class="p-4 font-black text-safira-700">${o.id || 'SAF-???'}</td>
-                        <td class="p-4">
-                            <span class="font-bold block text-slate-900">${o.custName}</span>
-                            <span class="text-xs text-slate-400 block">${o.custPhone}</span>
-                            <span class="text-xs text-slate-500 block mt-0.5">${o.address || 'العنوان غير مسجل'}</span>
-                        </td>
-                        <td class="p-4 text-slate-600 font-semibold">${o.zone || 'القاهرة الكبرى'}</td>
-                        <td class="p-4">
-                            <span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg text-xs font-bold block w-fit">${o.payType || 'كاش'}</span>
-                            ${o.transactionId && o.transactionId !== 'غير متوفر' ? `<span class="text-[10px] text-slate-500 block mt-1">المرجع: ${o.transactionId}</span>` : ''}
-                        </td>
-                        <td class="p-4 font-bold text-slate-900">${o.amount} ج.م</td>
-                        <td class="p-4 font-bold text-red-600">${o.shipping} ج.م</td>
-                        <td class="p-4">
-                            <span class="px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center ${o.status && o.status.includes('مكرر') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200/60'}">
-                                <i class="fa-solid fa-clock-rotate-left ml-1.5"></i> ${o.status || 'قيد المراجعة'}
-                            </span>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
+            const row = document.createElement('tr');
+            row.className = "hover:bg-slate-50/50 transition";
+            row.innerHTML = `
+                <td class="p-4 font-black text-safira-700">${o.id || 'SAF-???'}</td>
+                <td class="p-4">
+                    <span class="font-bold block text-slate-900">${o.custName}</span>
+                    <span class="text-xs text-slate-400 block">${o.custPhone}</span>
+                    <span class="text-xs text-slate-500 block mt-0.5">${o.address || 'العنوان غير مسجل'}</span>
+                </td>
+                <td class="p-4 text-slate-600 font-semibold">${o.zone || 'القاهرة الكبرى'}</td>
+                <td class="p-4">
+                    <span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg text-xs font-bold block w-fit">${o.payType || 'كاش'}</span>
+                    ${o.transactionId && o.transactionId !== 'غير متوفر' ? `<span class="text-[10px] text-slate-500 block mt-1">المرجع: ${o.transactionId}</span>` : ''}
+                </td>
+                <td class="p-4 font-bold text-slate-900">${o.amount} ج.م</td>
+                <td class="p-4 font-bold text-red-600">${o.shipping} ج.م</td>
+                <td class="p-4 flex items-center justify-between gap-2">
+                    <span class="px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center ${o.status && o.status.includes('مكرر') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200/60'}">
+                        ${o.status || 'قيد المراجعة'}
+                    </span>
+                    ${!isLocked ? `
+                        <button onclick="editOrder(${index})" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold px-2 py-1 bg-indigo-50 rounded-lg" title="تعديل الأوردر">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    ` : `<span class="text-[10px] text-slate-400 font-bold"><i class="fa-solid fa-lock"></i> مقفل</span>`}
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
 
-            const totalCollected = myOrders.reduce((sum, o) => sum + (o.payType === 'مسبق الدفع' ? 0 : (Number(o.amount) || 0)), 0);
-            const totalShipping = myOrders.reduce((sum, o) => sum + (Number(o.shipping) || 60), 0);
-            const netDues = currentMerchant.dues !== undefined ? currentMerchant.dues : (totalCollected - totalShipping);
+    const totalCollected = myOrders.reduce((sum, o) => sum + (o.payType === 'مسبق الدفع' ? 0 : (Number(o.amount) || 0)), 0);
+    const totalShipping = myOrders.reduce((sum, o) => sum + (Number(o.shipping) || 60), 0);
+    const netDues = currentMerchant.dues !== undefined ? currentMerchant.dues : (totalCollected - totalShipping);
 
-            document.getElementById('fin-total-collected').innerText = totalCollected + ' ج.م';
-            document.getElementById('fin-total-shipping').innerText = totalShipping + ' ج.م';
-            document.getElementById('fin-net-dues').innerText = netDues + ' ج.م';
-        }
+    document.getElementById('fin-total-collected').innerText = totalCollected + ' ج.م';
+    document.getElementById('fin-total-shipping').innerText = totalShipping + ' ج.م';
+    document.getElementById('fin-net-dues').innerText = netDues + ' ج.م';
+}
 
         // تفاعلية طريقة الدفع (إظهار رقم التحويل وتصفير المبلغ لمسبق الدفع)
         function handlePaymentTypeChange() {
