@@ -662,89 +662,114 @@ async function handleCreateShipment(e) {
             renderMerchantDashboard();
         }
 // رفع شيت إكسيل وقراءة البيانات مع التحقق من الاكتمال والافتراض التلقائي للدفع
-function handleExcelUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+// رفع شيت إكسيل وقراءة البيانات بمرونة تامة لجميع تسميات الأعمدة المحتملة
+        function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        
-        const rows = XLSX.utils.sheet_to_json(worksheet);
-        if (!globalDbData) globalDbData = { orders: [] };
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // البحث في أول شيت يحتوي على بيانات أو الشيت الأول افتراضياً
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                const rows = XLSX.utils.sheet_to_json(worksheet);
+                if (!globalDbData) globalDbData = { orders: [] };
 
-        let addedCount = 0;
-        let duplicateCount = 0;
-        let incompleteCount = 0;
+                let addedCount = 0;
+                let duplicateCount = 0;
+                let incompleteCount = 0;
 
-        rows.forEach(row => {
-            const name = String(row['الاسم'] || row['name'] || '').trim();
-            const phone = String(row['الهاتف'] || row['phone'] || '').trim();
-            const address = String(row['العنوان'] || row['address'] || '').trim();
-            const zone = row['المحافظة'] || row['zone'] || 'القاهرة الكبرى';
-            const rawAmount = row['المبلغ'] || row['amount'];
-            
-            // فحص اكتمال البيانات الأساسية (الاسم، الهاتف، العنوان)
-            const isComplete = name !== '' && phone !== '' && address !== '';
-            
-            // في حالة وجود مبلغ أمام الأوردر، يتم افتراض أن طريقة الدفع "كاش" تلقائياً
-            let payType = row['طريقة الدفع'] || row['payType'];
-            if (!payType) {
-                payType = (rawAmount !== undefined && rawAmount !== null && Number(rawAmount) > 0) ? 'كاش' : 'مسبق الدفع';
-            }
+                rows.forEach(row => {
+                    // دالة مساعدة للبحث عن الحقل بأكثر من اسم محتمل للأعمدة
+                    function getFieldValue(keysArray) {
+                        for (let key of keysArray) {
+                            // البحث المباشر أو البحث بصيغة غير مقيدة بحالة الفراغات أو الأحرف الكبيرة
+                            for (let colName in row) {
+                                if (colName.trim().toLowerCase() === key.toLowerCase()) {
+                                    const val = row[colName];
+                                    if (val !== undefined && val !== null && String(val).trim() !== '') {
+                                        return String(val).trim();
+                                    }
+                                }
+                            }
+                        }
+                        return '';
+                    }
 
-            const amount = payType === 'مسبق الدفع' ? 0 : Number(rawAmount || 0);
-            const isDuplicate = (globalDbData.orders || []).some(o => o.custPhone === phone);
+                    // استقبال الحقول باحتمالات أسمائها المختلفة
+                    const name = getFieldValue(['اسم العميل', 'الاسم', 'name', 'اسم المستلم', 'Client name', 'customer name', 'العميل']);
+                    const phone = getFieldValue(['رقم الهاتف', 'الهاتف', 'phone', 'موبايل', 'تليفون', 'mobile', 'tel']);
+                    const address = getFieldValue(['العنوان التفصيلي', 'العنوان', 'address', 'مكان التوصيل', 'التفاصيل']);
+                    const zone = getFieldValue(['المحافظة', 'المنطقة', 'zone', 'city', 'governorate']) || 'القاهرة الكبرى';
+                    const rawAmount = getFieldValue(['المبلغ', 'amount', 'القيمة', 'price', 'cash']);
+                    const notes = getFieldValue(['الملاحظات', 'notes', 'تعليمات', 'ملاحظة']) || '';
+                    const customPayType = getFieldValue(['طريقة الدفع', 'payType', 'payment', 'الدفع']);
+                    const trxId = getFieldValue(['رقم التحويل', 'transactionId', 'مرجع التحويل', 'رقم الإيصال']) || 'غير متوفر';
 
-            if (isDuplicate) duplicateCount++;
-            if (!isComplete) incompleteCount++;
+                    // فحص اكتمال البيانات الأساسية (الاسم، الهاتف، العنوان)
+                    const isComplete = name !== '' && phone !== '' && address !== '';
+                    
+                    // افتراض طريقة الدفع "كاش" تلقائياً في حال وجود مبلغ مالي، ما لم تُحدد طريقة دفع صريحة
+                    let payType = customPayType;
+                    if (!payType) {
+                        payType = (rawAmount !== '' && Number(rawAmount) > 0) ? 'كاش' : 'مسبق الدفع';
+                    }
 
-            const rates = JSON.parse(localStorage.getItem('safira_shipping_rates')) || { "القاهرة الكبرى": 60, "الإسكندرية والدلتا": 85, "الصعيد والمحافظات الحدودية": 120 };
-            const shippingCost = rates[zone] || 70;
+                    const amount = payType === 'مسبق الدفع' ? 0 : Number(rawAmount || 0);
+                    const isDuplicate = (globalDbData.orders || []).some(o => o.custPhone === phone);
 
-            // تحديد الحالة بناءً على التكرار واكتمال البيانات
-            let status = "قيد المراجعة";
-            if (!isComplete) {
-                status = "❌ بيانات غير مكتملة";
-            } else if (isDuplicate) {
-                status = "معلق - ⚠️ أوردر مكرر";
-            }
+                    if (isDuplicate) duplicateCount++;
+                    if (!isComplete) incompleteCount++;
 
-            const newOrder = {
-                id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
-                waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
-                merchantId: currentMerchant.id || "MER-EX",
-                merchantName: currentMerchant.name,
-                custName: name || 'بدون اسم',
-                custPhone: phone || 'بدون هاتف',
-                zone: zone,
-                address: address || 'بدون عنوان',
-                payType: payType,
-                transactionId: row['رقم التحويل'] || 'غير متوفر',
-                amount: amount,
-                shipping: shippingCost,
-                notes: row['الملاحظات'] || '',
-                isDuplicate: isDuplicate,
-                isComplete: isComplete,
-                status: status
+                    // حساب تكلفة الشحن للمحافظة
+                    const rates = JSON.parse(localStorage.getItem('safira_shipping_rates')) || { 
+                        "القاهرة الكبرى": 60, "الإسكندرية والدلتا": 85, "الصعيد والمحافظات الحدودية": 120, "القاهرة": 60, "الاسكندرية": 85, "الصعيد": 120 
+                    };
+                    const shippingCost = rates[zone] || rates[Object.keys(rates).find(k => zone.includes(k))] || 70;
+
+                    // تحديد الحالة (❌ بيانات غير مكتملة إذا نقص حقل أساسي)
+                    let status = "قيد المراجعة";
+                    if (!isComplete) {
+                        status = "❌ بيانات غير مكتملة";
+                    } else if (isDuplicate) {
+                        status = "معلق - ⚠️ أوردر مكرر";
+                    }
+
+                    const newOrder = {
+                        id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
+                        waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
+                        merchantId: currentMerchant.id || "MER-EX",
+                        merchantName: currentMerchant.name,
+                        custName: name || 'بدون اسم',
+                        custPhone: phone || 'بدون هاتف',
+                        zone: zone,
+                        address: address || 'بدون عنوان',
+                        payType: payType,
+                        transactionId: trxId,
+                        amount: amount,
+                        shipping: shippingCost,
+                        notes: notes,
+                        isDuplicate: isDuplicate,
+                        isComplete: isComplete,
+                        status: status
+                    };
+
+                    globalDbData.orders.unshift(newOrder);
+                    addedCount++;
+                });
+
+                localStorage.setItem('safira_local_db', JSON.stringify(globalDbData));
+                renderMerchantDashboard();
+                
+                alert(`تم رفع الملف بنجاح!\n- الشحنات المضافة: ${addedCount}\n- المكررة: ${duplicateCount}\n- ❌ غير مكتملة البيانات: ${incompleteCount}`);
+                event.target.value = '';
             };
-
-            globalDbData.orders.unshift(newOrder);
-            addedCount++;
-        });
-
-        localStorage.setItem('safira_local_db', JSON.stringify(globalDbData));
-        renderMerchantDashboard();
-        
-        alert(`تم رفع الملف بنجاح!\n- إجمالي الشحنات المضافة: ${addedCount}\n- مكررة: ${duplicateCount}\n- ❌ غير مكتملة البيانات: ${incompleteCount}`);
-        event.target.value = '';
-    };
-    reader.readAsArrayBuffer(file);
-}
-
+            reader.readAsArrayBuffer(file);
+        }
         let editingOrderIndex = null; // متغير لتتبع الأوردر جاري تعديله
 
         // دالة فتح نافذة التعديل للأوردر غير المكتمل أو المعلق
