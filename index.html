@@ -190,7 +190,7 @@
             <!-- Table Card -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800 text-base">سجل الطلبات والشحنات</h3>
+                    <div class="font-bold text-slate-800 text-base">سجل الطلبات والشحنات</div>
                     <button onclick="loadServerData()" class="text-xs font-bold text-safira-600 hover:underline"><i class="fa-solid fa-rotate ml-1"></i> تحديث البيانات</button>
                 </div>
                 <div class="overflow-x-auto">
@@ -234,22 +234,22 @@
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
                 <div class="flex justify-between items-center">
                     <div>
-                        <h3 class="font-bold text-slate-900 text-xl"><i class="fa-solid fa-wallet text-safira-600 ml-2"></i> تقرير الحسابات والماليات</h3>
+                        <div class="font-bold text-slate-900 text-xl"><i class="fa-solid fa-wallet text-safira-600 ml-2"></i> تقرير الحسابات والماليات</div>
                         <p class="text-xs text-slate-500 mt-1">إجمالي المستحقات المالية الخاصة بمتجرك وطرق طلب الصرف.</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                     <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
                         <p class="text-xs font-bold text-slate-500">إجمالي المبالغ المحصلة</p>
-                        <h4 id="fin-total-collected" class="text-3xl font-black text-slate-900 mt-2">0 ج.م</h4>
+                        <div id="fin-total-collected" class="text-3xl font-black text-slate-900 mt-2">0 ج.م</div>
                     </div>
                     <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
                         <p class="text-xs font-bold text-slate-500">العمولات والمصاريف</p>
-                        <h4 id="fin-total-shipping" class="text-3xl font-black text-red-600 mt-2">0 ج.م</h4>
+                        <div id="fin-total-shipping" class="text-3xl font-black text-red-600 mt-2">0 ج.م</div>
                     </div>
                     <div class="bg-safira-50 p-6 rounded-2xl border border-safira-200">
                         <p class="text-xs font-bold text-safira-700">الصافي المستحق للتحويل</p>
-                        <h4 id="fin-net-dues" class="text-3xl font-black text-safira-700 mt-2">0 ج.م</h4>
+                        <div id="fin-net-dues" class="text-3xl font-black text-safira-700 mt-2">0 ج.م</div>
                     </div>
                 </div>
 
@@ -273,12 +273,12 @@
 
     </main>
 
-    <!-- Modal: New Shipment (النموذج التفاعلي المحدث بالحقول الكاملة وطرق الدفع) -->
+    <!-- Modal: New Shipment -->
     <div id="shipment-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
                 <div>
-                    <h3 class="font-black text-slate-900 text-lg">إضافة شحنة جديدة</h3>
+                    <div class="font-black text-slate-900 text-lg">إضافة شحنة جديدة</div>
                     <p class="text-xs text-slate-400 mt-0.5">أدخل تفاصيل الشحنة وطريقة الدفع بدقة.</p>
                 </div>
                 <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition"><i class="fa-solid fa-xmark"></i></button>
@@ -321,7 +321,7 @@
                     <input type="text" id="input-address" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600" placeholder="الشارع، البناية، الطابق، الشقة">
                 </div>
 
-                <!-- حقل رقم التحويل (يظهر فقط في انستا باي أو المحفظة) -->
+                <!-- حقل رقم التحويل -->
                 <div id="trx-id-container" class="hidden">
                     <label class="block text-xs font-bold text-indigo-700 mb-1">رقم عملية التحويل (Transaction ID)</label>
                     <input type="text" id="input-trx-id" class="w-full bg-indigo-50/50 border border-indigo-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-indigo-600" placeholder="أدخل رقم الإيصال أو مرجع التحويل">
@@ -345,7 +345,7 @@
         </div>
     </div>
 
-    <!-- SheetJS CDN لقراءة ملفات الإكسيل -->
+    <!-- SheetJS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <!-- Script Section -->
@@ -387,7 +387,6 @@
             }
         }
 
-        // معالجة تسجيل التاجر الجديد وحظر تكرار الـ IP والبيانات
         async function handleMerchantRegister(e) {
             e.preventDefault();
             const ownerName = document.getElementById('reg-owner-name').value.trim();
@@ -446,7 +445,6 @@
             e.target.reset();
         }
 
-        // تسجيل الدخول بـ (اسم الشركة + كلمة السر)
         async function handleMerchantLogin(e) {
             e.preventDefault();
             const companyName = document.getElementById('login-username').value.trim();
@@ -504,63 +502,63 @@
                 renderMerchantDashboard();
             }
         }
-function renderMerchantDashboard() {
-    if (!globalDbData || !currentMerchant) return;
 
-    const tbody = document.getElementById('shipments-table-body');
-    tbody.innerHTML = '';
+        function renderMerchantDashboard() {
+            if (!globalDbData || !currentMerchant) return;
 
-    const myOrders = (globalDbData.orders || []).filter(o => o.merchantName === currentMerchant.name || o.merchantId === currentMerchant.id);
+            const tbody = document.getElementById('shipments-table-body');
+            tbody.innerHTML = '';
 
-    if (myOrders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">لا توجد شحنات مسجلة لمتجرك حتى الآن.</td></tr>`;
-    } else {
-        myOrders.forEach((o, index) => {
-            // التحقق مما إذا تم قبول الطلب من الإدارة لمنع التعديل
-            const isLocked = o.status && (o.status.includes('تم التسليم') || o.status.includes('جاري التوصيل') || o.status.includes('معتمد') || o.locked === true);
+            const myOrders = (globalDbData.orders || []).filter(o => o.merchantName === currentMerchant.name || o.merchantId === currentMerchant.id);
 
-            const row = document.createElement('tr');
-            row.className = "hover:bg-slate-50/50 transition";
-            row.innerHTML = `
-               <td class="p-4 font-black text-safira-700 cursor-pointer hover:underline" onclick="openTrackingModal('${o.id}')" title="انقر لتتبع الشحنة">
-    <i class="fa-solid fa-location-crosshairs ml-1 text-xs text-safira-500"></i> ${o.id || 'SAF-???'}
-</td>
-                    <span class="font-bold block text-slate-900">${o.custName}</span>
-                    <span class="text-xs text-slate-400 block">${o.custPhone}</span>
-                    <span class="text-xs text-slate-500 block mt-0.5">${o.address || 'العنوان غير مسجل'}</span>
-                </td>
-                <td class="p-4 text-slate-600 font-semibold">${o.zone || 'القاهرة الكبرى'}</td>
-                <td class="p-4">
-                    <span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg text-xs font-bold block w-fit">${o.payType || 'كاش'}</span>
-                    ${o.transactionId && o.transactionId !== 'غير متوفر' ? `<span class="text-[10px] text-slate-500 block mt-1">المرجع: ${o.transactionId}</span>` : ''}
-                </td>
-                <td class="p-4 font-bold text-slate-900">${o.amount} ج.م</td>
-                <td class="p-4 font-bold text-red-600">${o.shipping} ج.م</td>
-                <td class="p-4 flex items-center justify-between gap-2">
-    <span class="px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center ${o.status && o.status.includes('غير مكتملة') ? 'bg-red-100 text-red-800 border border-red-300' : o.status && o.status.includes('مكرر') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200/60'}">
-    ${o.status || 'قيد المراجعة'}
-</span>
-${!isLocked ? `
-    <button onclick="editOrder(${index})" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold px-2 py-1 bg-indigo-50 rounded-lg mr-2" title="تعديل الأوردر">
-        <i class="fa-solid fa-pen"></i>
-    </button>
-` : `<span class="text-[10px] text-slate-400 font-bold"><i class="fa-solid fa-lock"></i> مقفل</span>`}
-</td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
+            if (myOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">لا توجد شحنات مسجلة لمتجرك حتى الآن.</td></tr>`;
+            } else {
+                myOrders.forEach((o, index) => {
+                    const isLocked = o.status && (o.status.includes('تم التسليم') || o.status.includes('جاري التوصيل') || o.status.includes('معتمد') || o.locked === true);
 
-    const totalCollected = myOrders.reduce((sum, o) => sum + (o.payType === 'مسبق الدفع' ? 0 : (Number(o.amount) || 0)), 0);
-    const totalShipping = myOrders.reduce((sum, o) => sum + (Number(o.shipping) || 60), 0);
-    const netDues = currentMerchant.dues !== undefined ? currentMerchant.dues : (totalCollected - totalShipping);
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-50/50 transition";
+                    row.innerHTML = `
+                       <td class="p-4 font-black text-safira-700 cursor-pointer hover:underline" onclick="openTrackingModal('${o.id}')" title="انقر لتتبع الشحنة">
+                            <i class="fa-solid fa-location-crosshairs ml-1 text-xs text-safira-500"></i> ${o.id || 'SAF-???'}
+                       </td>
+                       <td class="p-4">
+                            <div class="font-bold block text-slate-900">${o.custName}</div>
+                            <div class="text-xs text-slate-400 block">${o.custPhone}</div>
+                            <div class="text-xs text-slate-500 block mt-0.5">${o.address || 'العنوان غير مسجل'}</div>
+                       </td>
+                       <td class="p-4 text-slate-600 font-semibold">${o.zone || 'القاهرة الكبرى'}</td>
+                       <td class="p-4">
+                            <span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg text-xs font-bold block w-fit">${o.payType || 'كاش'}</span>
+                            ${o.transactionId && o.transactionId !== 'غير متوفر' ? `<div class="text-[10px] text-slate-500 block mt-1">المرجع: ${o.transactionId}</div>` : ''}
+                       </td>
+                       <td class="p-4 font-bold text-slate-900">${o.amount} ج.م</td>
+                       <td class="p-4 font-bold text-red-600">${o.shipping} ج.م</td>
+                       <td class="p-4 flex items-center justify-between gap-2">
+                            <span class="px-3 py-1 rounded-xl text-xs font-bold inline-flex items-center ${o.status && o.status.includes('غير مكتملة') ? 'bg-red-100 text-red-800 border border-red-300' : o.status && o.status.includes('مكرر') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200/60'}">
+                            ${o.status || 'قيد المراجعة'}
+                            </span>
+                            ${!isLocked ? `
+                            <button onclick="editOrder(${index})" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold px-2 py-1 bg-indigo-50 rounded-lg mr-2" title="تعديل الأوردر">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            ` : `<div class="text-[10px] text-slate-400 font-bold"><i class="fa-solid fa-lock"></i> مقفل</div>`}
+                       </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
 
-    document.getElementById('fin-total-collected').innerText = totalCollected + ' ج.م';
-    document.getElementById('fin-total-shipping').innerText = totalShipping + ' ج.م';
-    document.getElementById('fin-net-dues').innerText = netDues + ' ج.م';
-}
+            const totalCollected = myOrders.reduce((sum, o) => sum + (o.payType === 'مسبق الدفع' ? 0 : (Number(o.amount) || 0)), 0);
+            const totalShipping = myOrders.reduce((sum, o) => sum + (Number(o.shipping) || 60), 0);
+            const netDues = currentMerchant.dues !== undefined ? currentMerchant.dues : (totalCollected - totalShipping);
 
-        // تفاعلية طريقة الدفع (إظهار رقم التحويل وتصفير المبلغ لمسبق الدفع)
+            document.getElementById('fin-total-collected').innerText = totalCollected + ' ج.م';
+            document.getElementById('fin-total-shipping').innerText = totalShipping + ' ج.م';
+            document.getElementById('fin-net-dues').innerText = netDues + ' ج.م';
+        }
+
         function handlePaymentTypeChange() {
             const payType = document.getElementById('input-pay-type').value;
             const trxContainer = document.getElementById('trx-id-container');
@@ -587,7 +585,10 @@ ${!isLocked ? `
                 if (amountInput.value == 0) amountInput.value = '';
             }
         }
-async function handleCreateShipment(e) {
+
+        let editingOrderIndex = null;
+
+        async function handleCreateShipment(e) {
             e.preventDefault();
             if (!globalDbData) globalDbData = { orders: [] };
 
@@ -616,7 +617,6 @@ async function handleCreateShipment(e) {
             }
 
             if (editingOrderIndex !== null && editingOrderIndex >= 0) {
-                // وضع التعديل على أوردر موجود مسبقاً
                 globalDbData.orders[editingOrderIndex].custName = name;
                 globalDbData.orders[editingOrderIndex].custPhone = phone;
                 globalDbData.orders[editingOrderIndex].address = address;
@@ -630,10 +630,9 @@ async function handleCreateShipment(e) {
                 globalDbData.orders[editingOrderIndex].isDuplicate = isDuplicate;
                 globalDbData.orders[editingOrderIndex].status = status;
 
-                editingOrderIndex = null; // إعادة تعيين مؤشر التعديل
+                editingOrderIndex = null;
                 alert('تم تحديث بيانات الشحنة بنجاح!');
             } else {
-                // وضع إضافة أوردر جديد
                 const newOrder = {
                     id: "SAF-" + Math.floor(1000 + Math.random() * 9000),
                     waybill: "WAY-" + Math.floor(100000 + Math.random() * 900000),
@@ -662,8 +661,7 @@ async function handleCreateShipment(e) {
             handlePaymentTypeChange();
             renderMerchantDashboard();
         }
-// رفع شيت إكسيل وقراءة البيانات مع التحقق من الاكتمال والافتراض التلقائي للدفع
-// رفع شيت إكسيل وقراءة البيانات بمرونة تامة لجميع تسميات الأعمدة المحتملة
+
         function handleExcelUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -672,8 +670,6 @@ async function handleCreateShipment(e) {
             reader.onload = function(e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-                
-                // البحث في أول شيت يحتوي على بيانات أو الشيت الأول افتراضياً
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
                 
@@ -685,10 +681,8 @@ async function handleCreateShipment(e) {
                 let incompleteCount = 0;
 
                 rows.forEach(row => {
-                    // دالة مساعدة للبحث عن الحقل بأكثر من اسم محتمل للأعمدة
                     function getFieldValue(keysArray) {
                         for (let key of keysArray) {
-                            // البحث المباشر أو البحث بصيغة غير مقيدة بحالة الفراغات أو الأحرف الكبيرة
                             for (let colName in row) {
                                 if (colName.trim().toLowerCase() === key.toLowerCase()) {
                                     const val = row[colName];
@@ -701,7 +695,6 @@ async function handleCreateShipment(e) {
                         return '';
                     }
 
-                    // استقبال الحقول باحتمالات أسمائها المختلفة
                     const name = getFieldValue(['اسم العميل', 'الاسم', 'name', 'اسم المستلم', 'Client name', 'customer name', 'العميل']);
                     const phone = getFieldValue(['رقم الهاتف', 'الهاتف', 'phone', 'موبايل', 'تليفون', 'mobile', 'tel']);
                     const address = getFieldValue(['العنوان التفصيلي', 'العنوان', 'address', 'مكان التوصيل', 'التفاصيل']);
@@ -711,10 +704,7 @@ async function handleCreateShipment(e) {
                     const customPayType = getFieldValue(['طريقة الدفع', 'payType', 'payment', 'الدفع']);
                     const trxId = getFieldValue(['رقم التحويل', 'transactionId', 'مرجع التحويل', 'رقم الإيصال']) || 'غير متوفر';
 
-                    // فحص اكتمال البيانات الأساسية (الاسم، الهاتف، العنوان)
                     const isComplete = name !== '' && phone !== '' && address !== '';
-                    
-                    // افتراض طريقة الدفع "كاش" تلقائياً في حال وجود مبلغ مالي، ما لم تُحدد طريقة دفع صريحة
                     let payType = customPayType;
                     if (!payType) {
                         payType = (rawAmount !== '' && Number(rawAmount) > 0) ? 'كاش' : 'مسبق الدفع';
@@ -726,13 +716,11 @@ async function handleCreateShipment(e) {
                     if (isDuplicate) duplicateCount++;
                     if (!isComplete) incompleteCount++;
 
-                    // حساب تكلفة الشحن للمحافظة
                     const rates = JSON.parse(localStorage.getItem('safira_shipping_rates')) || { 
                         "القاهرة الكبرى": 60, "الإسكندرية والدلتا": 85, "الصعيد والمحافظات الحدودية": 120, "القاهرة": 60, "الاسكندرية": 85, "الصعيد": 120 
                     };
                     const shippingCost = rates[zone] || rates[Object.keys(rates).find(k => zone.includes(k))] || 70;
 
-                    // تحديد الحالة (❌ بيانات غير مكتملة إذا نقص حقل أساسي)
                     let status = "قيد المراجعة";
                     if (!isComplete) {
                         status = "❌ بيانات غير مكتملة";
@@ -771,67 +759,61 @@ async function handleCreateShipment(e) {
             };
             reader.readAsArrayBuffer(file);
         }
-        let editingOrderIndex = null; // متغير لتتبع الأوردر جاري تعديله
 
-        // فتح نافذة تتبع الشحنة وعرض مراحل خط سيرها
-function openTrackingModal(orderId) {
-    if (!globalDbData || !globalDbData.orders) return;
-    
-    const order = globalDbData.orders.find(o => o.id === orderId || o.waybill === orderId);
-    if (!order) {
-        alert('لم يتم العثور على بيانات هذه الشحنة!');
-        return;
-    }
+        function openTrackingModal(orderId) {
+            if (!globalDbData || !globalDbData.orders) return;
+            
+            const order = globalDbData.orders.find(o => o.id === orderId || o.waybill === orderId);
+            if (!order) {
+                alert('لم يتم العثور على بيانات هذه الشحنة!');
+                return;
+            }
 
-    document.getElementById('track-order-id-sub').innerText = `رقم الشحنة: ${order.id} | البوليصة: ${order.waybill || 'WAY-000000'}`;
-    document.getElementById('track-cust-name').innerText = order.custName || '-';
-    document.getElementById('track-cust-phone').innerText = order.custPhone || '-';
-    document.getElementById('track-cust-zone').innerText = `${order.zone || ''} - ${order.address || ''}`;
+            document.getElementById('track-order-id-sub').innerText = `رقم الشحنة: ${order.id} | البوليصة: ${order.waybill || 'WAY-000000'}`;
+            document.getElementById('track-cust-name').innerText = order.custName || '-';
+            document.getElementById('track-cust-phone').innerText = order.custPhone || '-';
+            document.getElementById('track-cust-zone').innerText = `${order.zone || ''} - ${order.address || ''}`;
 
-    const timelineEl = document.getElementById('tracking-timeline');
-    timelineEl.innerHTML = '';
+            const timelineEl = document.getElementById('tracking-timeline');
+            timelineEl.innerHTML = '';
 
-    const status = order.status || 'قيد المراجعة';
-    
-    const steps = [
-        { title: 'تم إنشاء الشحنة وتسجيلها', desc: 'تم استلام بيانات الطلب من التاجر بنجاح.', done: true },
-        { title: 'مراجعة واعتماد الإدارة', desc: status.includes('غير مكتملة') || status.includes('مكرر') ? 'معلق لحين مراجعة وتعديل البيانات.' : 'تم اعتماد الطلب وجاهز للتجهيز.', done: !status.includes('غير مكتملة') && !status.includes('مكرر') && status !== 'قيد المراجعة' },
-        { title: 'خروج مع مندوب التوصيل', desc: 'الشحنة مع مندوب المنطقة للتسليم.', done: status.includes('جاري التوصيل') || status.includes('تم التسليم') },
-        { title: 'تسليم الشحنة للعميل', desc: status.includes('تم التسليم') ? 'تم تسليم الشحنة بنجاح وتحصيل المبلغ.' : 'في انتظار اكتمال التوصيل.', done: status.includes('تم التسليم') }
-    ];
+            const status = order.status || 'قيد المراجعة';
+            const steps = [
+                { title: 'تم إنشاء الشحنة وتسجيلها', desc: 'تم استلام بيانات الطلب من التاجر بنجاح.', done: true },
+                { title: 'مراجعة واعتماد الإدارة', desc: status.includes('غير مكتملة') || status.includes('مكرر') ? 'معلق لحين مراجعة وتعديل البيانات.' : 'تم اعتماد الطلب وجاهز للتجهيز.', done: !status.includes('غير مكتملة') && !status.includes('مكرر') && status !== 'قيد المراجعة' },
+                { title: 'خروج مع مندوب التوصيل', desc: 'الشحنة مع مندوب المنطقة للتسليم.', done: status.includes('جاري التوصيل') || status.includes('تم التسليم') },
+                { title: 'تسليم الشحنة للعميل', desc: status.includes('تم التسليم') ? 'تم تسليم الشحنة بنجاح وتحصيل المبلغ.' : 'في انتظار اكتمال التوصيل.', done: status.includes('تم التسليم') }
+            ];
 
-    steps.forEach((step) => {
-        const item = document.createElement('div');
-        item.className = "relative pr-6";
-        item.innerHTML = `
-            <div class="absolute -right-[23px] top-1 w-4 h-4 rounded-full ${step.done ? 'bg-safira-600 ring-4 ring-safira-50' : 'bg-slate-300'} flex items-center justify-center text-white text-[10px]">
-                ${step.done ? '<i class="fa-solid fa-check"></i>' : ''}
-            </div>
-            <h5 class="text-xs font-bold ${step.done ? 'text-slate-900' : 'text-slate-400'}">${step.title}</h5>
-            <p class="text-[11px] text-slate-500 mt-0.5">${step.desc}</p>
-        `;
-        timelineEl.appendChild(item);
-    });
+            steps.forEach((step) => {
+                const item = document.createElement('div');
+                item.className = "relative pr-6";
+                item.innerHTML = `
+                    <div class="absolute -right-[23px] top-1 w-4 h-4 rounded-full ${step.done ? 'bg-safira-600 ring-4 ring-safira-50' : 'bg-slate-300'} flex items-center justify-center text-white text-[10px]">
+                        ${step.done ? '<i class="fa-solid fa-check"></i>' : ''}
+                    </div>
+                    <div class="text-xs font-bold ${step.done ? 'text-slate-900' : 'text-slate-400'}">${step.title}</div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">${step.desc}</p>
+                `;
+                timelineEl.appendChild(item);
+            });
 
-    document.getElementById('tracking-modal').classList.remove('hidden');
-}
+            document.getElementById('tracking-modal').classList.remove('hidden');
+        }
 
-function closeTrackingModal() {
-    document.getElementById('tracking-modal').classList.add('hidden');
-}
-        // دالة فتح نافذة التعديل للأوردر غير المكتمل أو المعلق
+        function closeTrackingModal() {
+            document.getElementById('tracking-modal').classList.add('hidden');
+        }
+
         function editOrder(index) {
             if (!globalDbData || !globalDbData.orders) return;
             
-            // تصفية أوردرات التاجر الحالي فقط للحصول على العنصر الصحيح في الجدول
             const myOrders = globalDbData.orders.filter(o => o.merchantName === currentMerchant.name || o.merchantId === currentMerchant.id);
             const targetOrder = myOrders[index];
             if (!targetOrder) return;
 
-            // حفظ مؤشر الأوردر الأصلي في المصفوفة الكلية
             editingOrderIndex = globalDbData.orders.findIndex(o => o.id === targetOrder.id);
 
-            // تعبئة حقول النموذج بالبيانات الحالية للأوردر
             document.getElementById('input-name').value = targetOrder.custName !== 'بدون اسم' ? targetOrder.custName : '';
             document.getElementById('input-phone').value = targetOrder.custPhone !== 'بدون هاتف' ? targetOrder.custPhone : '';
             document.getElementById('input-zone').value = targetOrder.zone || 'القاهرة الكبرى';
@@ -840,13 +822,11 @@ function closeTrackingModal() {
             document.getElementById('input-amount').value = targetOrder.amount || '';
             document.getElementById('input-notes').value = targetOrder.notes || '';
 
-            // تفعيل التفاعل مع طريقة الدفع لتحديث الحقول الظاهرة
             handlePaymentTypeChange();
             if (targetOrder.transactionId && targetOrder.transactionId !== 'غير متوفر') {
                 document.getElementById('input-trx-id').value = targetOrder.transactionId;
             }
 
-            // إظهار نافذة التعديل / الإضافة
             openModal();
         }
         
@@ -885,47 +865,48 @@ function closeTrackingModal() {
             alert(`تم تقديم طلب صرف المستحقات بقيمة (${netDues} ج.م) عبر (${method}) بنجاح وإرساله للإدارة!`);
         }
     </script>
-<!-- Modal: تتبع الشحنة اللحظي (Live Tracking Modal) -->
-<div id="tracking-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
-            <div>
-                <h3 class="font-black text-slate-900 text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-map-location-dot text-safira-600"></i> تتبع خط سير الشحنة
-                </h3>
-                <p id="track-order-id-sub" class="text-xs text-slate-400 mt-0.5">رقم البوليصة: WAY-XXXXXX</p>
-            </div>
-            <button onclick="closeTrackingModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition"><i class="fa-solid fa-xmark"></i></button>
-        </div>
 
-        <div class="space-y-6">
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/60 space-y-2">
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500">اسم المستلم:</span>
-                    <span id="track-cust-name" class="font-bold text-slate-900">-</span>
+    <!-- Modal: تتبع الشحنة اللحظي -->
+    <div id="tracking-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                <div>
+                    <div class="font-black text-slate-900 text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-safira-600"></i> تتبع خط سير الشحنة
+                    </div>
+                    <p id="track-order-id-sub" class="text-xs text-slate-400 mt-0.5">رقم البوليصة: WAY-XXXXXX</p>
                 </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500">رقم الهاتف:</span>
-                    <span id="track-cust-phone" class="font-bold text-slate-900">-</span>
-                </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500">الوجهة:</span>
-                    <span id="track-cust-zone" class="font-bold text-slate-900">-</span>
-                </div>
+                <button onclick="closeTrackingModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div>
-                <h4 class="text-xs font-bold text-slate-700 mb-4">مراحل الشحن والتسليم:</h4>
-                <div id="tracking-timeline" class="space-y-4 border-r-2 border-safira-200 pr-4 mr-2">
-                    <!-- تعبئة ديناميكية -->
+            <div class="space-y-6">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/60 space-y-2">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-500">اسم المستلم:</span>
+                        <span id="track-cust-name" class="font-bold text-slate-900">-</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-500">رقم الهاتف:</span>
+                        <span id="track-cust-phone" class="font-bold text-slate-900">-</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-500">الوجهة:</span>
+                        <span id="track-cust-zone" class="font-bold text-slate-900">-</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-xs font-bold text-slate-700 mb-4">مراحل الشحن والتسليم:</div>
+                    <div id="tracking-timeline" class="space-y-4 border-r-2 border-safira-200 pr-4 mr-2">
+                        <!-- تعبئة ديناميكية -->
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="mt-8 pt-4 border-t border-slate-100 flex justify-end">
-            <button type="button" onclick="closeTrackingModal()" class="px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs shadow">إغلاق</button>
+            <div class="mt-8 pt-4 border-t border-slate-100 flex justify-end">
+                <button type="button" onclick="closeTrackingModal()" class="px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs shadow">إغلاق</button>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>
