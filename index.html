@@ -33,6 +33,9 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col">
 
+    <!-- عنوان رئيسي لهيكلة الصفحة متوافق مع معايير W3C -->
+    <h1 class="sr-only">بوابة التجار المتطورة - سفيرة للخدمات اللوجستية</h1>
+
     <!-- Login & Register Gate Overlay -->
     <div id="login-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 my-8">
@@ -43,16 +46,16 @@
                     <div class="w-16 h-16 rounded-2xl bg-safira-600 flex items-center justify-center shadow-md mx-auto mb-4 text-white text-3xl">
                         <i class="fa-solid fa-store"></i>
                     </div>
-                    <h2 class="text-2xl font-black text-slate-900">بوابة التجار</h2>
+                    <div class="text-2xl font-black text-slate-900">بوابة التجار</div>
                     <p class="text-xs text-slate-500 mt-1">تسجيل الدخول باسم الشركة وكلمة السر</p>
                 </div>
                 <form onsubmit="handleMerchantLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">اسم الشركة / المتجر</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5" for="login-username">اسم الشركة / المتجر</label>
                         <input type="text" id="login-username" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-safira-600 transition" placeholder="مثال: متجر القاهرة الإلكتروني">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">كلمة السر</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5" for="login-password">كلمة السر</label>
                         <input type="password" id="login-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-safira-600 transition" placeholder="••••••••">
                     </div>
                     <button type="submit" class="w-full py-3.5 bg-safira-600 hover:bg-safira-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-safira-600/30 transition">
@@ -75,47 +78,46 @@
                     <div class="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md mx-auto mb-3 text-white text-2xl">
                         <i class="fa-solid fa-file-signature"></i>
                     </div>
-                    <h2 class="text-xl font-black text-slate-900">تسجيل تاجر جديد</h2>
+                    <div class="text-xl font-black text-slate-900">تسجيل تاجر جديد</div>
                     <p class="text-xs text-slate-500 mt-1">أدخل بيانات متجرك للانضمام إلى شبكة سفيرة</p>
                 </div>
 
                 <form onsubmit="handleMerchantRegister(event)" class="space-y-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم صاحب الشركة</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="reg-owner-name">اسم صاحب الشركة</label>
                         <input type="text" id="reg-owner-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="الاسم الثلاثي">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم التليفون</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="reg-phone">رقم التليفون</label>
                         <input type="tel" id="reg-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="010xxxxxxxx">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم الشركة / المتجر</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="reg-company-name">اسم الشركة / المتجر</label>
                         <input type="text" id="reg-company-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="اسم العلامة التجارية">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">نوع النشاط</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="reg-type">نوع النشاط</label>
                         <select id="reg-type" onchange="toggleRegistryField()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition">
                             <option value="online">تاجر أونلاين</option>
                             <option value="company">شركة مسجلة</option>
                         </select>
                     </div>
 
-                    <!-- رقم السجل التجاري (يظهر للشركات المسجلة فقط) -->
                     <div id="registry-container" class="hidden">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم السجل التجاري</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="reg-commercial-id">رقم السجل التجاري</label>
                         <input type="text" id="reg-commercial-id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="رقم السجل الرسمى">
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">كلمة السر</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1" for="reg-password">كلمة السر</label>
                             <input type="password" id="reg-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="••••••••">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">تأكيد كلمة السر</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1" for="reg-confirm-password">تأكيد كلمة السر</label>
                             <input type="password" id="reg-confirm-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 transition" placeholder="••••••••">
                         </div>
                     </div>
@@ -145,10 +147,10 @@
                     <i class="fa-solid fa-store text-white text-2xl"></i>
                 </div>
                 <div>
-                    <h1 id="merchant-store-name" class="text-lg font-black tracking-wide">متجر التجار</h1>
-                    <span class="text-xs text-safira-400 font-semibold flex items-center mt-0.5">
-                        <span class="w-2 h-2 rounded-full bg-safira-500 inline-block ml-1.5 animate-pulse"></span> متصل بـ النظام المركزي
-                    </span>
+                    <div id="merchant-store-name" class="text-lg font-black tracking-wide">متجر التجار</div>
+                    <div class="text-xs text-safira-400 font-semibold flex items-center mt-0.5">
+                        <span class="w-2 h-2 rounded-full bg-safira-500 inline-block ml-1.5 animate-pulse"></span> متصل بـ النظام المركزي (تحديث فوري)
+                    </div>
                 </div>
             </div>
             <div class="flex items-center space-x-3 space-x-reverse">
@@ -173,8 +175,8 @@
                 <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-safira-600/10 rounded-full blur-2xl"></div>
                 <div class="relative z-10">
                     <span class="bg-safira-600/30 text-safira-300 border border-safira-500/20 px-3.5 py-1.5 rounded-xl text-xs font-bold">إدارة عمليات الشحن</span>
-                    <h2 class="text-3xl font-black mt-3">تتبع شحناتك الحالية والمعلقة</h2>
-                    <p class="text-sm text-slate-400 mt-1 max-w-xl">أضف شحناتك يدوياً أو ارفع شيت إكسيل لتسجيل الطلبات دفعة واحدة.</p>
+                    <div class="text-3xl font-black mt-3">تتبع شحناتك الحالية والمعلقة</div>
+                    <p class="text-sm text-slate-400 mt-1 max-w-xl">أضف شحناتك يدوياً أو ارفع شيت إكسيل لتسجيل الطلبات دفعة واحدة مع المزامنة الفورية.</p>
                 </div>
                 <div class="relative z-10 flex items-center space-x-3 space-x-reverse">
                     <button onclick="openModal()" class="bg-safira-600 hover:bg-safira-700 text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-safira-600/30 transition flex items-center">
@@ -219,7 +221,7 @@
             <div class="bg-gradient-to-r from-indigo-950 to-slate-900 text-white p-8 rounded-3xl shadow-xl flex justify-between items-center">
                 <div>
                     <span class="bg-indigo-500/30 text-indigo-300 border border-indigo-500/20 px-3.5 py-1.5 rounded-xl text-xs font-bold">المخزن الافتراضي</span>
-                    <h2 class="text-3xl font-black mt-3">إدارة واستلام المرتجعات</h2>
+                    <div class="text-3xl font-black mt-3">إدارة واستلام المرتجعات</div>
                     <p class="text-sm text-slate-400 mt-1 max-w-xl">مراجعة الشحنات المرتجعة من قِبل المناديب وإدخالها رسمياً إلى مخزونك.</p>
                 </div>
             </div>
@@ -232,11 +234,15 @@
         <!-- 3. Finances View -->
         <div id="view-finances" class="space-y-6 hidden">
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center flex-wrap gap-4">
                     <div>
                         <div class="font-bold text-slate-900 text-xl"><i class="fa-solid fa-wallet text-safira-600 ml-2"></i> تقرير الحسابات والماليات</div>
                         <p class="text-xs text-slate-500 mt-1">إجمالي المستحقات المالية الخاصة بمتجرك وطرق طلب الصرف.</p>
                     </div>
+                    <!-- زر تصدير تقرير الماليات المضاف حديثاً -->
+                    <button onclick="exportFinancialReport()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-download"></i> تصدير تقرير الحسابات (CSV)
+                    </button>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                     <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
@@ -255,7 +261,7 @@
 
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 mt-6">
                     <div class="w-full md:w-1/2 space-y-2">
-                        <label class="text-xs font-bold text-slate-700 block">اختر طريقة استلام المستحقات:</label>
+                        <label class="text-xs font-bold text-slate-700 block" for="merchant-payout-method">اختر طريقة استلام المستحقات:</label>
                         <select id="merchant-payout-method" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-safira-500 focus:outline-none">
                             <option value="كاش">كاش (استلام من الخزينة)</option>
                             <option value="محفظة">محفظة إلكترونية (فودافون كاش / اتصالات..)</option>
@@ -287,18 +293,18 @@
             <form onsubmit="handleCreateShipment(event)" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم المستلم</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="input-name">اسم المستلم</label>
                         <input type="text" id="input-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="input-phone">رقم الهاتف</label>
                         <input type="tel" id="input-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">المحافظة</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="input-zone">المحافظة</label>
                         <select id="input-zone" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600">
                             <option value="القاهرة الكبرى">القاهرة الكبرى</option>
                             <option value="الإسكندرية والدلتا">الإسكندرية والدلتا</option>
@@ -306,7 +312,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">طريقة الدفع</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="input-pay-type">طريقة الدفع</label>
                         <select id="input-pay-type" onchange="handlePaymentTypeChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600 font-bold text-safira-700">
                             <option value="كاش">كاش (COD)</option>
                             <option value="انستا باي">انستا باي (InstaPay)</option>
@@ -317,23 +323,23 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">العنوان التفصيلي</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1" for="input-address">العنوان التفصيلي</label>
                     <input type="text" id="input-address" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600" placeholder="الشارع، البناية، الطابق، الشقة">
                 </div>
 
-                <!-- حقل رقم التحويل -->
+                <!-- حقل رقم التحويل مع ميزة التحقق من عدم تكراره -->
                 <div id="trx-id-container" class="hidden">
-                    <label class="block text-xs font-bold text-indigo-700 mb-1">رقم عملية التحويل (Transaction ID)</label>
-                    <input type="text" id="input-trx-id" class="w-full bg-indigo-50/50 border border-indigo-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-indigo-600" placeholder="أدخل رقم الإيصال أو مرجع التحويل">
+                    <label class="block text-xs font-bold text-indigo-700 mb-1" for="input-trx-id">رقم عملية التحويل (Transaction ID)</label>
+                    <input type="text" id="input-trx-id" class="w-full bg-indigo-50/50 border border-indigo-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-indigo-600" placeholder="أدخل رقم الإيصال أو مرجع التحويل الفردي">
                 </div>
 
                 <div>
-                    <label id="amount-label" class="block text-xs font-bold text-slate-700 mb-1">مبلغ التحصيل (ج.م)</label>
+                    <label id="amount-label" class="block text-xs font-bold text-slate-700 mb-1" for="input-amount">مبلغ التحصيل (ج.م)</label>
                     <input type="number" id="input-amount" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600" placeholder="قيمة الشحنة المطلوبة">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">الملاحظات</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1" for="input-notes">الملاحظات</label>
                     <textarea id="input-notes" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-safira-600" placeholder="أي تعليمات خاصة للمندوب..."></textarea>
                 </div>
 
@@ -361,6 +367,8 @@
                 document.getElementById('login-modal').classList.add('hidden');
                 document.getElementById('merchant-store-name').innerText = currentMerchant.name;
                 loadServerData();
+                // تفعيل المزامنة في الوقت الحقيقي كل 5 ثوانٍ لضمان التحديث التلقائي
+                setInterval(loadServerData, 5000);
             }
         });
 
@@ -488,10 +496,17 @@
 
         async function loadServerData() {
             try {
-                const res = await apiRequest('/api/sync');
-                if (res && res.success) {
-                    globalDbData = res.data;
+                // جلب البيانات من الـ LocalStorage المحدث أو النظام المركزي
+                const localDb = JSON.parse(localStorage.getItem('safira_local_db'));
+                if (localDb) {
+                    globalDbData = localDb;
                     renderMerchantDashboard();
+                } else {
+                    const res = await apiRequest('/api/sync');
+                    if (res && res.success) {
+                        globalDbData = res.data;
+                        renderMerchantDashboard();
+                    }
                 }
             } catch (error) {
                 globalDbData = globalDbData || {
@@ -600,6 +615,15 @@
             const trxId = document.getElementById('input-trx-id').value.trim();
             const amount = payType === 'مسبق الدفع' ? 0 : Number(document.getElementById('input-amount').value);
             const notes = document.getElementById('input-notes').value.trim();
+
+            // التحقق البرمجي المضاف حديثاً: منع تكرار رقم عملية التحويل (Transaction ID)
+            if ((payType === 'انستا باي' || payType === 'محفظة') && trxId) {
+                const isTrxDuplicate = (globalDbData.orders || []).some((o, idx) => idx !== editingOrderIndex && o.transactionId === trxId);
+                if (isTrxDuplicate) {
+                    alert('عذراً، رقم عملية التحويل (Transaction ID) هذا تم استخدامه مسبقاً في شحنة أخرى ولا يمكن تكراره!');
+                    return;
+                }
+            }
 
             const isComplete = name !== '' && phone !== '' && address !== '';
             const isDuplicate = globalDbData.orders.some((o, idx) => idx !== editingOrderIndex && o.custPhone === phone);
@@ -760,49 +784,24 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function openTrackingModal(orderId) {
-            if (!globalDbData || !globalDbData.orders) return;
+        // ميزة إضافية جديدة: تصدير تقرير الحسابات والماليات للتاجر بصيغة CSV
+        function exportFinancialReport() {
+            if (!globalDbData || !currentMerchant) return;
+            const myOrders = (globalDbData.orders || []).filter(o => o.merchantName === currentMerchant.name || o.merchantId === currentMerchant.id);
             
-            const order = globalDbData.orders.find(o => o.id === orderId || o.waybill === orderId);
-            if (!order) {
-                alert('لم يتم العثور على بيانات هذه الشحنة!');
-                return;
-            }
-
-            document.getElementById('track-order-id-sub').innerText = `رقم الشحنة: ${order.id} | البوليصة: ${order.waybill || 'WAY-000000'}`;
-            document.getElementById('track-cust-name').innerText = order.custName || '-';
-            document.getElementById('track-cust-phone').innerText = order.custPhone || '-';
-            document.getElementById('track-cust-zone').innerText = `${order.zone || ''} - ${order.address || ''}`;
-
-            const timelineEl = document.getElementById('tracking-timeline');
-            timelineEl.innerHTML = '';
-
-            const status = order.status || 'قيد المراجعة';
-            const steps = [
-                { title: 'تم إنشاء الشحنة وتسجيلها', desc: 'تم استلام بيانات الطلب من التاجر بنجاح.', done: true },
-                { title: 'مراجعة واعتماد الإدارة', desc: status.includes('غير مكتملة') || status.includes('مكرر') ? 'معلق لحين مراجعة وتعديل البيانات.' : 'تم اعتماد الطلب وجاهز للتجهيز.', done: !status.includes('غير مكتملة') && !status.includes('مكرر') && status !== 'قيد المراجعة' },
-                { title: 'خروج مع مندوب التوصيل', desc: 'الشحنة مع مندوب المنطقة للتسليم.', done: status.includes('جاري التوصيل') || status.includes('تم التسليم') },
-                { title: 'تسليم الشحنة للعميل', desc: status.includes('تم التسليم') ? 'تم تسليم الشحنة بنجاح وتحصيل المبلغ.' : 'في انتظار اكتمال التوصيل.', done: status.includes('تم التسليم') }
-            ];
-
-            steps.forEach((step) => {
-                const item = document.createElement('div');
-                item.className = "relative pr-6";
-                item.innerHTML = `
-                    <div class="absolute -right-[23px] top-1 w-4 h-4 rounded-full ${step.done ? 'bg-safira-600 ring-4 ring-safira-50' : 'bg-slate-300'} flex items-center justify-center text-white text-[10px]">
-                        ${step.done ? '<i class="fa-solid fa-check"></i>' : ''}
-                    </div>
-                    <div class="text-xs font-bold ${step.done ? 'text-slate-900' : 'text-slate-400'}">${step.title}</div>
-                    <p class="text-[11px] text-slate-500 mt-0.5">${step.desc}</p>
-                `;
-                timelineEl.appendChild(item);
+            let csvContent = "\uFEFFرقم الشحنة,اسم العميل,الهاتف,المحافظة,طريقة الدفع,مبلغ التحصيل,مصاريف الشحن,الحالة\n";
+            myOrders.forEach(o => {
+                csvContent += `"${o.id}","${o.custName}","${o.custPhone}","${o.zone}","${o.payType}",${o.amount},${o.shipping},"${o.status}"\n`;
             });
 
-            document.getElementById('tracking-modal').classList.remove('hidden');
-        }
-
-        function closeTrackingModal() {
-            document.getElementById('tracking-modal').classList.add('hidden');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `financial_report_${currentMerchant.name}.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         function editOrder(index) {
@@ -865,48 +864,5 @@
             alert(`تم تقديم طلب صرف المستحقات بقيمة (${netDues} ج.م) عبر (${method}) بنجاح وإرساله للإدارة!`);
         }
     </script>
-
-    <!-- Modal: تتبع الشحنة اللحظي -->
-    <div id="tracking-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
-                <div>
-                    <div class="font-black text-slate-900 text-lg flex items-center gap-2">
-                        <i class="fa-solid fa-map-location-dot text-safira-600"></i> تتبع خط سير الشحنة
-                    </div>
-                    <p id="track-order-id-sub" class="text-xs text-slate-400 mt-0.5">رقم البوليصة: WAY-XXXXXX</p>
-                </div>
-                <button onclick="closeTrackingModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-
-            <div class="space-y-6">
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/60 space-y-2">
-                    <div class="flex justify-between text-xs">
-                        <span class="text-slate-500">اسم المستلم:</span>
-                        <span id="track-cust-name" class="font-bold text-slate-900">-</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-slate-500">رقم الهاتف:</span>
-                        <span id="track-cust-phone" class="font-bold text-slate-900">-</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-slate-500">الوجهة:</span>
-                        <span id="track-cust-zone" class="font-bold text-slate-900">-</span>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="text-xs font-bold text-slate-700 mb-4">مراحل الشحن والتسليم:</div>
-                    <div id="tracking-timeline" class="space-y-4 border-r-2 border-safira-200 pr-4 mr-2">
-                        <!-- تعبئة ديناميكية -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 pt-4 border-t border-slate-100 flex justify-end">
-                <button type="button" onclick="closeTrackingModal()" class="px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs shadow">إغلاق</button>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
