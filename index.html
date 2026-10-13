@@ -359,9 +359,22 @@
     <script src="./App.js"></script> 
     
     <script>
-        let currentMerchant = JSON.parse(localStorage.getItem('safira_merchant')) || null;
-        let globalDbData = null;
+        function toggleAuthMode(mode){
+  const loginC = document.getElementById('login-form-container');
+  const regC = document.getElementById('register-form-container');
+  if(mode === 'register'){
+    loginC.classList.add('hidden');
+    regC.classList.remove('hidden');
+  } else {
+    regC.classList.add('hidden');
+    loginC.classList.remove('hidden');
+    document.getElementById('login-error')?.classList.add('hidden');
+  }
+}
+window.toggleAuthMode = toggleAuthMode;
 
+let currentMerchant = JSON.parse(localStorage.getItem('safira_merchant')) || null;
+        
         window.addEventListener('DOMContentLoaded', () => {
             if (currentMerchant) {
                 document.getElementById('login-modal').classList.add('hidden');
