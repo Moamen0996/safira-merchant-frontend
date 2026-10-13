@@ -1,4 +1,4 @@
-const API_URL = window.CONFIG && window.CONFIG.API_URL ? window.CONFIG.API_URL : 'https://safira-admin-frontend-production.up.railway.app';
+const API_URL = window.CONFIG && window.CONFIG.API_URL ? window.CONFIG.API_URL : 'https://safira-logistic.vercel.app';
 
 document.addEventListener('DOMContentLoaded', () => {
     loadMerchantShipments();
